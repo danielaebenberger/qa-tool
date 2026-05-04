@@ -1,0 +1,93 @@
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+}
+
+.field {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.field input,
+.field select {
+  font-size: 0.85rem;
+}
+
+.spacer {
+  flex: 1;
+  min-width: 0.5rem;
+}
+
+.quickGroup {
+  display: inline-flex;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-control);
+  overflow: hidden;
+}
+
+.quickBtn {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: none;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  border-right: 1px solid var(--color-border-strong);
+}
+
+.quickBtn:last-child {
+  border-right: none;
+}
+
+.quickBtn:hover {
+  background: var(--color-surface-hover);
+}
+
+.quickBtnActive {
+  background: var(--color-accent);
+  color: #fff;
+}
+
+.quickBtnActive:hover {
+  background: var(--color-accent-hover);
+}
+
+.btn {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-control);
+  padding: 0.35rem 0.8rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.btn:hover {
+  background: var(--color-surface-hover);
+}
+
+.btnPrimary {
+  background: var(--color-accent);
+  color: #fff;
+  border-color: var(--color-accent);
+}
+
+.btnPrimary:hover {
+  background: var(--color-accent-hover);
+  border-color: var(--color-accent-hover);
+}
+
+.btnPrimary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

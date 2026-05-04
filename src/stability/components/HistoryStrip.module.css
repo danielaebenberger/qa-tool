@@ -1,0 +1,25 @@
+.row {
+  display: inline-flex;
+  gap: 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+.cell {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 3px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0;
+  user-select: none;
+}
+
+.passed { background: var(--color-success); }
+.failed { background: var(--color-danger); }
+.blocked { background: var(--color-warning); color: #1a1a1a; }
+.retest { background: #a855f7; }
+.absent { background: var(--color-border-strong); color: var(--color-text-muted); }
