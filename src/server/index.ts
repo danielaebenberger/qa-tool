@@ -10,6 +10,7 @@ import { runsRoute } from './routes/runs';
 import { metricsRoute } from './routes/metrics';
 import { dashboardRoute } from './routes/dashboard';
 import { stabilityRoute } from './routes/stability';
+import { failuresRoute } from './routes/failures';
 
 const config = loadConfig();
 const testrail = new TestRailAdapter({
@@ -33,6 +34,7 @@ app.route('/api/runs', runsRoute(testrail));
 app.route('/api/metrics', metricsRoute(testrail, config.defaultProjectId));
 app.route('/api/dashboard', dashboardRoute(testrail, config.defaultProjectId));
 app.route('/api/stability', stabilityRoute(testrail, config.defaultProjectId));
+app.route('/api/failures', failuresRoute(testrail, config.defaultProjectId));
 app.get('/api/health', (c) => c.json({ status: 'ok' }));
 
 // Serve built Vite assets in production; in dev, Vite handles its own server

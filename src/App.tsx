@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { FiltersProvider } from './dashboard/filters/FiltersContext';
 import { DashboardPage } from './dashboard/page/DashboardPage';
 import { StabilityPage } from './stability/page/StabilityPage';
+import { FailuresPage } from './failures/page/FailuresPage';
 import { useRoute } from './routing/navigate';
 
 const queryClient = new QueryClient({
@@ -18,6 +19,7 @@ const queryClient = new QueryClient({
 function Router() {
   const route = useRoute();
   if (route === '/stability') return <StabilityPage />;
+  if (route === '/failures') return <FailuresPage />;
   return <DashboardPage />;
 }
 
