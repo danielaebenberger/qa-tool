@@ -16,6 +16,10 @@ import {
   StabilityOverviewSchema,
   type StabilityOverview,
 } from '../core/contracts/Stability';
+import {
+  LatestFailuresOverviewSchema,
+  type LatestFailuresOverview,
+} from '../core/contracts/Failures';
 
 const BASE = '/api';
 
@@ -83,4 +87,16 @@ export function fetchStability(query: StabilityQuery): Promise<StabilityOverview
   if (query.days !== undefined) params.set('days', String(query.days));
   if (query.history !== undefined) params.set('history', String(query.history));
   return apiFetch(`${BASE}/stability?${params.toString()}`, StabilityOverviewSchema);
+}
+
+export interface FailuresQuery {
+  projectId: number;
+  days?: number;
+}
+
+export function fetchLatestFailures(query: FailuresQuery): Promise<LatestFailuresOverview> {
+  const params = new URLSearchParams();
+  params.set('projectId', String(query.projectId));
+  if (query.days !== undefined) params.set('days', String(query.days));
+  return apiFetch(`${BASE}/failures?${params.toString()}`, LatestFailuresOverviewSchema);
 }

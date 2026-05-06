@@ -60,6 +60,13 @@ export function DashboardPage() {
           </button>
           <button
             type="button"
+            onClick={() => navigate('/failures')}
+            className={styles.linkBtn}
+          >
+            Latest Failures →
+          </button>
+          <button
+            type="button"
             onClick={refresh}
             disabled={isFetching}
             className={styles.refreshBtn}

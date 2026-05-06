@@ -68,6 +68,13 @@ export function StabilityPage() {
           </button>
           <button
             type="button"
+            className={styles.linkBtn}
+            onClick={() => navigate('/failures')}
+          >
+            Latest Failures →
+          </button>
+          <button
+            type="button"
             className={styles.refreshBtn}
             onClick={refresh}
             disabled={isFetching}
