@@ -19,26 +19,45 @@ first.
 
 Then produce, in this order:
 
-1. **Clarifying questions (max 5).** Things a human must answer before
+1. **Coverage audit — do this before drafting anything.** Search the repo
+   for existing tests that already touch this topic. Search twice: once by
+   the code-level identifiers involved (action ids, function/prop names),
+   and once by the human-visible text a user would see (button/menu
+   labels, page titles) — a canonical enumeration/"sanity" test for the
+   surface (e.g. a "Displays X actions" spec) usually asserts against
+   rendered labels, not internal names, and a code-token-only search will
+   miss it. Also identify whether the behavior behind this ticket routes
+   through a component/action already exercised by another spec (a shared
+   dialog, a shared registered action) — if so, that behavior doesn't need
+   re-proving. Note what you found; it drives steps 3 and 4.
+2. **Clarifying questions (max 5).** Things a human must answer before
    meaningful test cases can be written. Cite the part of the ticket each
    question targets. If the ticket is fully unambiguous, say so.
-2. **Risk view.** A short bullet list of what could plausibly break in
+3. **Risk view.** A short bullet list of what could plausibly break in
    Jahia — at the core platform layer, at the module layer, and at
    integration points (search, workflows, headless APIs, persistence).
    One bullet per risk, each tagged `[functional]`, `[non-functional]`, or
    `[regression]`.
-3. **Test cases.** One per row, in the table below. **Default to plain
+4. **Test cases.** One per row, in the table below. **Default to plain
    markdown table format**, not Gherkin — the wider Jahia org uses
    Gherkin only for a small subset of tests. Use Gherkin only if the user
-   confirms this ticket falls in that subset.
+   confirms this ticket falls in that subset. **Cypress/e2e is the default
+   Type** — that's the artefact the QA team owns and acts on. Propose a
+   unit-test row only for a genuine logic gap with no observable e2e
+   behavior; mark it `(dev-owned)` in Type and keep its Steps/Expected
+   terse — developers decide whether and how to add it, so it doesn't earn
+   the same level of detail as a Cypress case. Don't propose a case that
+   only re-verifies a shared component already covered per step 1.
 
-   | # | Title | Type (unit / int / e2e / manual) | Priority | Preconditions | Steps | Expected | Covers risk |
+   | # | Title | Type (e2e / unit (dev-owned) / manual) | Priority | Preconditions | Steps | Expected | Covers risk |
    |---|---|---|---|---|---|---|---|
 
-4. **Coverage check.** Cross-reference against any existing tests the user
-   shared. Mark each new case as `new`, `extends <existing test>`, or
-   `replaces <existing test>` with reasoning.
-5. **Missing requirements.** Anything the ticket assumes but does not
+5. **Coverage check.** Cross-reference against what step 1 found (plus
+   anything else the user shared). Mark each new case as `new`, `extends
+   <existing test>`, or `replaces <existing test>` with reasoning. Prefer
+   `extends <canonical enumeration test>` over `new` whenever step 1 found
+   one for this surface.
+6. **Missing requirements.** Anything the ticket assumes but does not
    state. Phrase as a request the QA engineer can take back to product.
 
 ## Output rules
