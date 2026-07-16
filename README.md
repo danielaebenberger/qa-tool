@@ -1,7 +1,59 @@
 # qa-tool
 
-TypeScript-based QA dashboard for the Jahia DXP suite. Surfaces CI test
-metrics, stability analysis, coverage maps, and team motivation mechanics.
+TypeScript-based QA assistant for the Jahia DXP suite, organized around four
+pillars: a CI test-results dashboard, per-repo test coverage maps, test-case
+identification for tickets, and team motivation mechanics. See
+[`.github/instructions/qa-domain.instructions.md`](.github/instructions/qa-domain.instructions.md)
+for the full domain context behind all of it.
+
+**New here?** Read "The four pillars" below first — it tells you what's a
+running app you open in a browser versus what's an AI-assistant prompt/skill
+you invoke, so you don't go looking for a dashboard widget that doesn't exist
+yet, or miss a ready-to-use prompt because it isn't in the UI.
+
+## The four pillars — what's built, what you invoke
+
+| # | Pillar | What it's for | Status today | How you use it |
+|---|---|---|---|---|
+| 1 | **CI test results dashboard** | Pass rate, flaky/new/always-failing/stable classification — "what should I look at today" | **Running app**, backed by TestRail | Open the dashboard (`pnpm dev`, see below). To add a new metric/widget, invoke the **`qa-dashboard-widget`** skill |
+| 2 | **Test coverage analysis** | A per-repo coverage *map* (what's tested and how, not a single score) | **Prompt only** — no app UI yet | Run the **`/coverage-map`** prompt, pointed at the target Jahia repo |
+| 3 | **Test-case identification** | Draft/challenge test cases for a ticket; ask clarifying questions; flag missing requirements | **Prompt + skill** — no app UI yet | **`/define-testcases`** for a single ticket; the **`test-case-design`** skill for an epic or a regression-prone area |
+| 4 | **Team motivation** | Sincere, non-gamified recognition of stability wins | **Stub only**, waiting on real usage of 1–3 first | Nothing to invoke yet — see `src/motivation/README.md` |
+
+Pillars 2 and 3 don't have a dashboard page: their output is a markdown
+document you review and paste into a ticket or wiki, produced by asking your
+AI assistant to run the prompt/skill. That's intentional — see "Output is
+editable artefacts" in the domain instructions.
+
+## Skills, prompts, and agents — quick reference
+
+| Name | Type | Use it when | What you get |
+|---|---|---|---|
+| [`define-testcases`](.github/prompts/define-testcases.prompt.md) | prompt | Refining a story, or in the test phase of a ticket | Coverage audit → clarifying questions → risk view → test-case table (Cypress-first) → coverage check → missing requirements |
+| [`coverage-map`](.github/prompts/coverage-map.prompt.md) | prompt | You need an honest picture of what's tested in a Jahia repo before planning work there | A markdown table of functional areas × test kinds present × risk, with gap call-outs and next-step proposals |
+| [`test-case-design`](.github/skills/test-case-design/SKILL.md) | skill | The ticket is too big for one prompt pass — an epic, a release candidate, a known regression-prone module | A fuller artefact: risk register → coverage discovery → test cases → trace matrix → coverage gaps → open questions |
+| [`qa-dashboard-widget`](.github/skills/qa-dashboard-widget/SKILL.md) | skill | You're adding a new metric/widget to the dashboard pillar (dev task, not a QA-analysis task) | A widget wired through a typed data contract, with loading/empty/error/stale/healthy states and tests |
+| [`bootstrap-qa-tool`](.github/prompts/bootstrap-qa-tool.prompt.md) | prompt | Reference only — records the original scaffold decisions | Not something you run day-to-day |
+| [`qa-reviewer`](.github/agents/qa-reviewer.agent.md) | agent | Reviewing a PR or staged changes to qa-tool itself | A read-only structured review against the four pillars and the hard constraints in `AGENTS.md` |
+
+All of the above load
+[`qa-domain.instructions.md`](.github/instructions/qa-domain.instructions.md)
+first — that's where the Jahia-specific ground rules live (honesty over
+completeness, no test-case chains that depend on each other, Cypress/e2e as
+the default QA-owned artefact, etc.). You don't need to load it yourself;
+just be aware it's shaping every answer.
+
+### How to actually invoke one
+
+- **GitHub Copilot Chat** (VS Code): type the prompt as a slash command,
+  e.g. `/define-testcases`, or ask for a skill/agent by name, e.g. "use the
+  test-case-design skill for the multi-site epic."
+- **Claude Code / other agents**: ask directly — "run coverage-map on
+  `Jahia/<repo>`" or "use define-testcases for ticket #1234" — the agent
+  resolves the name to the file above.
+- Either way: **give it the ticket link, PR link, or target repo up front.**
+  These prompts ask for missing inputs, but starting with a link instead of
+  a paraphrase gets you a more grounded result.
 
 ## Prerequisites
 

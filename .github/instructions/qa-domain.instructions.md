@@ -48,6 +48,51 @@ tool's job is to **compensate for squad size**, not to replace judgement.
   whatever the team uses), not opaque AI output.
 - Conversational, but every suggestion cites the input it was based on
   (ticket text, code snippet, prior test).
+- **Audit existing coverage before drafting anything new.** Search by both
+  the code-level identifiers involved (action ids, function/prop names)
+  *and* the human-visible text a user would see (button/menu labels, page
+  titles) — many teams already maintain a canonical "sanity"/enumeration
+  test per surface (e.g. a "Displays X actions" spec) that asserts against
+  rendered labels, not internal names; a code-token-only search will miss
+  it. If such a test exists, extend it — don't add a parallel new file.
+- **Don't re-test a shared component/action that's already covered
+  elsewhere.** When several menus/surfaces route through the same
+  underlying component (a shared dialog, a shared action registration),
+  that component's own behavior only needs proving once. A new test that
+  wires the same action into a new surface should assert *presence/
+  reachability from that surface*, not re-verify what the component does.
+- **Cypress/e2e is the primary, QA-owned deliverable.** Default every
+  proposed case to e2e/Cypress — that's what the QA team actually acts on
+  and maintains. Propose a unit test only for a genuine logic gap with no
+  observable e2e behavior (e.g. a pure calculation), mark it `(dev-owned)`,
+  and keep it brief: developers decide whether and how to add it, so it
+  isn't worth the same level of detail as the Cypress proposals.
+- **Group by feature/capability, not by changed file or method.** When a
+  change spans several call sites (a new config service, its consumers, a
+  migration patch, a rewritten integration), propose one test topic for the
+  *capability* they jointly implement — asserting the end-to-end, observable
+  behavior a user or downstream feature depends on — rather than one test
+  per mechanical unit. A test whose only claim is "this no-op/log-only method
+  doesn't do anything" restates the source, not a requirement; fold it into
+  the feature-level test instead of listing it separately.
+- **But grouping by feature is not license to chain steps.** Don't turn a
+  feature topic into one long scenario of dependent steps (e.g. a single
+  test walking start → correction → resubmit → accept, where a failure at
+  step 1 hides whether the later steps would have worked) or into test
+  cases that only make sense if an earlier one already passed. Each test
+  case should stay independently runnable with one clear failure signal.
+  Sequence multiple steps in one test only when the *sequencing itself* is
+  the behavior under test (e.g. a state machine's transitions); otherwise
+  split by behavior, even within the same feature topic. Balance matters in
+  both directions — neither one-test-per-method nor one-mega-test-per-feature.
+- **Match write-up length to the size of the change.** A small/config-only
+  fix (a few lines, one file) earns a compact note: fix in one line, gap in
+  one line, tests as a short list, one line on what's deliberately not
+  proposed. Save full sections (context, rationale, effort/value discussion)
+  for changes where the size or risk actually justifies the reading time.
+  Team acceptance of this kind of feedback depends on it being quick to
+  read, not on how thorough it looks — cut prose before cutting technical
+  accuracy, never the reverse.
 
 ### 4. Team motivation
 - Sincere, not gimmicky. The squad must *want* to keep using and improving
@@ -80,6 +125,9 @@ tool's job is to **compensate for squad size**, not to replace judgement.
 - Motivation features that rank engineers against each other.
 - Anything that requires QA to maintain a parallel requirements database.
 - Tying tool adoption to mandatory metrics submitted upward.
+- Test-case suggestions scoped to a single trivial/no-op code path (e.g.
+  verifying a log-only method "does nothing") instead of the feature or
+  capability it's part of.
 
 ## Pointers
 

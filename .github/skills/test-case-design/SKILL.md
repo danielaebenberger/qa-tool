@@ -34,15 +34,32 @@ Categories: `functional`, `data`, `security`, `performance`, `compat`,
 Stop and present this register to the user before proceeding. They may
 prune or add.
 
+### 1b. Coverage discovery (before generating any case)
+
+Search the repo for tests that already touch this feature/area — search
+by code-level identifiers (action ids, function/prop names) **and** by
+the human-visible text a user would see (labels, titles); a canonical
+enumeration/"sanity" test for a surface (e.g. "Displays X actions") often
+asserts rendered labels only, and a code-token-only search misses it.
+List what exists per surface before generating anything new. Also flag
+any shared component/action already exercised elsewhere — its behavior
+doesn't need re-proving from a new call site.
+
 ### 2. Generate cases per risk
 
 For each surviving risk, generate 1–3 cases. Use the table format from
 [/define-testcases](../../prompts/define-testcases.prompt.md). Add a
 `Risk ID` column linking back to step 1.
 
-Bias toward integration / e2e cases for cross-module risks; toward unit
-cases for logic-heavy risks. Do not duplicate cases that already exist —
-mark as `extends <path>` or `replaces <path>` with reasoning.
+**Cypress/e2e is the default type — that's the QA-owned deliverable.**
+Propose a unit case only for a logic-heavy risk with no observable e2e
+behavior, mark it `(dev-owned)`, and keep it terse; developers own whether
+and how it gets added, so it shouldn't carry the same level of detail as
+the e2e cases. Do not duplicate cases that already exist, and do not
+propose a case whose only purpose is re-verifying a shared component
+found in step 1b — mark those `extends <path>` instead, or drop them.
+Prefer extending a canonical enumeration test found in 1b over adding a
+new spec, whenever the case is a presence/reachability check.
 
 ### 3. Trace matrix
 
@@ -58,6 +75,12 @@ Before handing off, verify:
 - [ ] No two cases verify the same condition with the same inputs.
 - [ ] Manual cases are marked `manual` and justified (why automation is
       not viable today).
+- [ ] Every unit case is marked `(dev-owned)` and stays terse; e2e is the
+      default and carries the detail.
+- [ ] No case re-verifies a shared component/action already covered by an
+      existing spec found in the coverage discovery step.
+- [ ] Coverage discovery searched both code identifiers and human-visible
+      label text before any case was drafted.
 - [ ] Test data needs are listed once at the top, not duplicated per case.
 - [ ] Accessibility cases exist for any UI surface.
 - [ ] The artefact is plain markdown the QA engineer can paste into the
@@ -82,3 +105,11 @@ correct your context cheaply.
 - Inventing Jahia behaviour you cannot point to in the inputs.
 - Producing a document that requires further AI to understand. The QA
   engineer owns it after handoff.
+- Searching only by code-level identifiers and missing an existing test
+  that asserts the human-visible label instead.
+- Adding a new spec file when an existing canonical/enumeration test for
+  the same surface could be extended instead.
+- Proposing a case that re-tests a shared component/dialog already
+  covered by another spec, instead of testing the new wiring/reachability.
+- Giving a `(dev-owned)` unit case the same depth as an e2e case — it
+  isn't the QA team's artefact to develop.
