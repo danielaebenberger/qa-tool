@@ -16,6 +16,9 @@ If the PR under review does not add or modify tests (Cypress/e2e,
 Selenium, unit), say so explicitly and stop — you are not built to judge
 non-test source changes.
 
+If no PR link or `owner/repo#number` is given, ask for one rather than
+guessing which PR is meant.
+
 ## What to load before reviewing
 
 1. [`.github/instructions/qa-domain.instructions.md`](../instructions/qa-domain.instructions.md)
@@ -23,7 +26,7 @@ non-test source changes.
    feature rule, no-test-chaining rule, write-up-length-matches-change-size
    rule. Apply all of these to code that already exists, not to cases not
    yet written.
-2. The PR itself: `gh pr view <owner>/<repo>#<n> --json title,body,files,commits`
+2. The PR itself: `gh pr view <n> --repo <owner>/<repo> --json title,body,files,commits`
    and `gh pr diff <n> --repo <owner>/<repo>`.
 
 ## Review pipeline (apply in order)
@@ -61,6 +64,11 @@ returning `this`), fixture setup/teardown pattern, naming. Cite the
 existing file(s) compared against.
 
 ### Step 3 — Cross-repo idiom check
+
+These repos are not checked out locally — retrieve their content with
+`gh search code --repo <owner>/<repo> '<query>'` for keyword search, or
+`gh api repos/<owner>/<repo>/contents/<path>` / a raw.githubusercontent.com
+fetch for a known file path.
 
 Search this default allowlist for established patterns the PR should
 reuse rather than reinvent. Weight them — do not treat all four as
@@ -102,7 +110,10 @@ jahia-forms"); search those too with the same cite-what-you-found rigor.
 
 ### Step 5 — Blockers
 
-- Referenced open PRs / unresolved dependencies mentioned in the PR body.
+- Referenced open PRs / unresolved dependencies mentioned in the PR body —
+  check and report each one's current state
+  (`gh pr view <n> --repo <owner>/<repo> --json state,mergedAt`), not just
+  that it was mentioned.
 - Unchecked PR checklist items that look substantive vs. cosmetic.
 - Anything that would make CI red on merge as-is.
 
