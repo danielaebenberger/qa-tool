@@ -194,12 +194,12 @@ Run:
 cd "/Users/debenberger/Documents/RESOURCES/07jahiaqa/qa-tool" && \
   head -5 .github/agents/pr-test-reviewer.agent.md && \
   grep -c "^## " .github/agents/pr-test-reviewer.agent.md && \
-  grep -n "gh pr comment\|gh pr review\|gh pr merge" .github/agents/pr-test-reviewer.agent.md
+  awk '/^```/{f=!f; next} f' .github/agents/pr-test-reviewer.agent.md | grep -n "gh pr comment\|gh pr review\|gh pr merge"
 ```
 Expected:
 - `head -5` shows the frontmatter block (`---`, `name: pr-test-reviewer`, `description: ...`, `tools: [...]`, `---`).
 - The `grep -c "^## "` count is 3 (`## What to load before reviewing`, `## Review pipeline (apply in order)`, `## Output format` — the `### Step N` lines have three hashes and do not match this pattern, so they're excluded by design; this count confirms no extra or missing top-level section).
-- The last `grep -n` command finds **zero** matches (confirms no GitHub write command appears anywhere in the file, including in illustrative text) — if it finds any, fix Step 1 before continuing.
+- The last command finds **zero** matches **inside fenced code blocks** (confirms no GitHub write command is ever instructed as an actual invocation). Note this deliberately does NOT scan prose: the file's read-only declaration names `gh pr comment`/`gh pr review`/`gh pr merge` inline, as illustrative examples of what's forbidden — that mention is correct and expected, not a violation. Only a match inside a ` ```...``` ` block (an actual instructed command) would mean Step 1's content is wrong.
 
 - [ ] **Step 3: Commit**
 
