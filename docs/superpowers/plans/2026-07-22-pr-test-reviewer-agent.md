@@ -193,12 +193,12 @@ Run:
 ```bash
 cd "/Users/debenberger/Documents/RESOURCES/07jahiaqa/qa-tool" && \
   head -5 .github/agents/pr-test-reviewer.agent.md && \
-  grep -c "^## " .github/agents/pr-test-reviewer.agent.md && \
+  awk '/^```/{f=!f; next} !f' .github/agents/pr-test-reviewer.agent.md | grep -c "^## " && \
   awk '/^```/{f=!f; next} f' .github/agents/pr-test-reviewer.agent.md | grep -n "gh pr comment\|gh pr review\|gh pr merge"
 ```
 Expected:
 - `head -5` shows the frontmatter block (`---`, `name: pr-test-reviewer`, `description: ...`, `tools: [...]`, `---`).
-- The `grep -c "^## "` count is 3 (`## What to load before reviewing`, `## Review pipeline (apply in order)`, `## Output format` — the `### Step N` lines have three hashes and do not match this pattern, so they're excluded by design; this count confirms no extra or missing top-level section).
+- The heading count, **restricted to text outside fenced code blocks**, is 3 (`## What to load before reviewing`, `## Review pipeline (apply in order)`, `## Output format`). The fence exclusion matters here: the Output format section's literal example (required verbatim, see Step 1) itself contains `## Summary`, `## Dimension findings`, etc. inside its fenced block — those are part of the quoted template, not real section headings of this file, and a plain `grep -c "^## "` over the whole file would wrongly count them too (giving 8, not 3). The `### Step N` lines have three hashes and don't match `^## ` either way.
 - The last command finds **zero** matches **inside fenced code blocks** (confirms no GitHub write command is ever instructed as an actual invocation). Note this deliberately does NOT scan prose: the file's read-only declaration names `gh pr comment`/`gh pr review`/`gh pr merge` inline, as illustrative examples of what's forbidden — that mention is correct and expected, not a violation. Only a match inside a ` ```...``` ` block (an actual instructed command) would mean Step 1's content is wrong.
 
 - [ ] **Step 3: Commit**
