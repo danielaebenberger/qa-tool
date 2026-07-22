@@ -51,6 +51,7 @@ This harness follows the model in
 | `.github/prompts/*.prompt.md` | guide / inferential | slash commands | Parameterised, focused workflows |
 | `.github/skills/*/SKILL.md` | guide / inferential | on-demand | Multi-step workflows with assets |
 | `.github/agents/qa-reviewer.agent.md` | sensor / inferential | subagent | Reviews changes against QA-pillar goals |
+| `.github/agents/pr-test-reviewer.agent.md` | sensor / inferential | subagent | Reviews test PRs in any Jahia repo for coverage fit, convention fit, and cross-repo idiom |
 | `pnpm lint && pnpm typecheck` | sensor / computational | pre-commit + CI | Type and lint ground truth |
 | `pnpm test:run` | sensor / computational | pre-commit + CI | Unit test ground truth |
 | `pnpm e2e:smoke` | sensor / computational | CI on PR | E2E smoke ground truth |
@@ -100,5 +101,6 @@ qa-tool/
     │   ├── test-case-design/SKILL.md
     │   └── qa-dashboard-widget/SKILL.md
     └── agents/
-        └── qa-reviewer.agent.md
+        ├── qa-reviewer.agent.md
+        └── pr-test-reviewer.agent.md
 ```
