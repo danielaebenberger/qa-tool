@@ -17,7 +17,7 @@ yet, or miss a ready-to-use prompt because it isn't in the UI.
 |---|---|---|---|---|
 | 1 | **CI test results dashboard** | Pass rate, flaky/new/always-failing/stable classification — "what should I look at today" | **Running app**, backed by TestRail | Open the dashboard (`pnpm dev`, see below). To add a new metric/widget, invoke the **`qa-dashboard-widget`** skill |
 | 2 | **Test coverage analysis** | A per-repo coverage *map* (what's tested and how, not a single score) | **Prompt only** — no app UI yet | Run the **`/coverage-map`** prompt, pointed at the target Jahia repo |
-| 3 | **Test-case identification** | Draft/challenge test cases for a ticket; ask clarifying questions; flag missing requirements; review an already-open test PR | **Prompt + skill + agent** — no app UI yet | **`/define-testcases`** for a single ticket; the **`test-case-design`** skill for an epic or a regression-prone area; the **`pr-test-reviewer`** agent for reviewing an already-open test PR |
+| 3 | **Test-case identification** | Draft/challenge test cases for a ticket; ask clarifying questions; flag missing requirements; review an already-open test PR | **Prompt + skill + agent** — no app UI yet | **`/tldr`** to triage a ticket/PR before deciding it's worth the fuller pass; **`/define-testcases`** for a single ticket; the **`test-case-design`** skill for an epic or a regression-prone area; the **`pr-test-reviewer`** agent for reviewing an already-open test PR |
 | 4 | **Team motivation** | Sincere, non-gamified recognition of stability wins | **Stub only**, waiting on real usage of 1–3 first | Nothing to invoke yet — see `src/motivation/README.md` |
 
 Pillars 2 and 3 don't have a dashboard page: their output is a markdown
@@ -29,6 +29,7 @@ editable artefacts" in the domain instructions.
 
 | Name | Type | Use it when | What you get |
 |---|---|---|---|
+| [`tldr`](.github/prompts/tldr.prompt.md) | prompt | You've just been handed a verbose ticket, PR, or AI-generated description and need to get oriented in under a minute, before deciding whether it earns a `/define-testcases` pass | A short, adaptive digest — what it is, the real user impact, whether it's a genuine defect or a workaround for unsupported use, and a concrete example pulled out if the source has one |
 | [`define-testcases`](.github/prompts/define-testcases.prompt.md) | prompt | Refining a story, or in the test phase of a ticket | Coverage audit → clarifying questions → risk view → test-case table (Cypress-first) → coverage check → missing requirements |
 | [`coverage-map`](.github/prompts/coverage-map.prompt.md) | prompt | You need an honest picture of what's tested in a Jahia repo before planning work there | A markdown table of functional areas × test kinds present × risk, with gap call-outs and next-step proposals |
 | [`test-case-design`](.github/skills/test-case-design/SKILL.md) | skill | The ticket is too big for one prompt pass — an epic, a release candidate, a known regression-prone module | A fuller artefact: risk register → coverage discovery → test cases → trace matrix → coverage gaps → open questions |
