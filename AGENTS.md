@@ -95,6 +95,7 @@ qa-tool/
     │   └── qa-domain.instructions.md
     ├── prompts/
     │   ├── bootstrap-qa-tool.prompt.md
+    │   ├── tldr.prompt.md
     │   ├── define-testcases.prompt.md
     │   └── coverage-map.prompt.md
     ├── skills/
