@@ -97,6 +97,12 @@ equally authoritative:
    with `jahia-cypress`/`mail-service`, say so explicitly and prefer the
    latter — never silently pick one without flagging the conflict.
 
+**Known pitfall — silent diagnostics:** `cy.log()` is commonly swallowed by
+`cypress-terminal-report` configs set to `onFail` only (seen in
+`Jahia/jcontent`) — a counter meant to prove something on a *passing* run
+via `cy.log()` produces nothing. Flag such instrumentation; the fix is
+`cy.task()` (runs in Node, reaches stdout/CI log regardless of outcome).
+
 The user may name additional repos in their request ("also check
 jahia-forms"); search those too with the same cite-what-you-found rigor.
 
@@ -108,7 +114,30 @@ jahia-forms"); search those too with the same cite-what-you-found rigor.
   between `it()` blocks is not.
 - This report's own length matches the size of the change under review.
 
-### Step 5 — Blockers
+### Step 5 — Empirical verification of flakiness/behavioral claims (when applicable)
+
+If the PR claims to fix flakiness, a race condition, or anything else that
+hinges on runtime behavior rather than code shape, do not take the PR
+author's own summary of a CI run as settled fact — read the run yourself:
+
+- `gh pr checks <n> --repo <owner>/<repo>` for job URLs, then
+  `gh run view --job <id> --log --repo <owner>/<repo>` (read-only, no write
+  scope needed).
+- Grep the raw log for whatever the fix's own diagnostic would print if it
+  engaged (a retry counter, a log line). A claim that a retry loop
+  "recovers X" is unproven until it's seen firing in a real log — a green
+  checkmark alone doesn't show it.
+- Cross-check any still-red suites against the repo's own stated
+  pre-existing baseline failures before crediting or blaming this PR for
+  them.
+- If the retried action is a synthetic UI event (e.g. Cypress
+  `realHover()`), check whether it can even repeat itself: browser event
+  dispatchers fire enter/leave-style events only on an actual hit-test
+  change, so retrying the same action at the same target can be a no-op
+  dressed as a fix. Distinguish "nicer failure message" from "changed
+  outcome."
+
+### Step 6 — Blockers
 
 - Referenced open PRs / unresolved dependencies mentioned in the PR body —
   check and report each one's current state
@@ -141,14 +170,19 @@ Return exactly one markdown document:
 | 2 | Convention fit | pass / concern / block | |
 | 3 | Cross-repo idiom check | pass / concern / block | |
 | 4 | Scope & independence | pass / concern / block | |
-| 5 | Blockers | pass / concern / block | |
+| 5 | Empirical verification | pass / concern / block / n/a | |
+| 6 | Blockers | pass / concern / block | |
 
 ## Specific suggestions
 - file:line — what to change and why (cite the target-repo file or the
   reference-repo file/line the suggestion is modeled on).
 
 ## What I did not check
-<anything not verifiable read-only, e.g. whether it actually passes in CI>
+<anything genuinely not verifiable read-only — e.g. behavior across many
+future runs, or a claim resting on a CI run that hasn't happened yet. Note:
+whether a specific already-run CI job passed, and what its log shows, is
+usually verifiable read-only via `gh run view --job <id> --log` — don't
+default to listing that here.>
 ```
 
 Every claim in "Specific suggestions" must cite a concrete file:line —
