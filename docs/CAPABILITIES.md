@@ -30,6 +30,7 @@
 
 | Name | Kind | Description | Version | See also |
 |---|---|---|---|---|
+| `qa-capture` | skill | Turn a lesson you just learned the hard way into a proposed skill, guide, or sensor — the on-ramp for contributing to this harness instead of solving the same problem alone next time. | 1.0 | — |
 | `qa-dashboard-widget` | skill | End-to-end workflow for adding a new widget to the qa-tool dashboard: data source → typed contract → component → tests → wiring. Use when implementing a new metric, stability indicator, or motivation surface inside qa-tool/src/dashboard/. | 1.0 | — |
 | `qa-pr-test-reviewer` | agent | Read-only subagent that reviews test PRs across any Jahia repo for coverage fit, convention fit, and cross-repo idiom consistency. | 1.0 | — |
 | `qa-self-reviewer` | agent | Read-only subagent that reviews changes to qa-tool itself against the five pillar goals and CLAUDE.md's hard constraints. | 1.0 | — |
