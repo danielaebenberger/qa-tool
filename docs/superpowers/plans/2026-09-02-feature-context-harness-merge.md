@@ -1658,12 +1658,33 @@ export function parseFrontmatter(content: string): Record<string, string> | null
   const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
   if (!match) return null;
   const block = match[1] as string;
+  const lines = block.split('\n');
   const result: Record<string, string> = {};
-  for (const line of block.split('\n')) {
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i] as string;
     const m = line.match(/^([a-zA-Z_]+):\s*(.*)$/);
     if (!m) continue;
     const key = m[1] as string;
-    let value = (m[2] as string).trim();
+    const rawValue = (m[2] as string).trim();
+
+    // YAML block-scalar indicator (`>`, `>-`, `|`, `|-`) with nothing else on
+    // the line: fold the indented continuation lines into one value. Several
+    // of Task 7's skills use `description: >` for multi-line prose, carried
+    // over from their original Copilot frontmatter — this parser must handle
+    // that shape, not just single-line values.
+    if (/^[>|][-+]?$/.test(rawValue)) {
+      const collected: string[] = [];
+      let j = i + 1;
+      while (j < lines.length && /^\s+\S/.test(lines[j] as string)) {
+        collected.push((lines[j] as string).trim());
+        j++;
+      }
+      result[key] = collected.join(' ').trim();
+      i = j - 1;
+      continue;
+    }
+
+    let value = rawValue;
     if (value.startsWith('"') && value.endsWith('"')) value = value.slice(1, -1);
     if (value.startsWith('[') && value.endsWith(']')) value = value.slice(1, -1).trim();
     result[key] = value;
