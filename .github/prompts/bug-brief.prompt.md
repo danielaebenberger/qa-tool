@@ -1,27 +1,49 @@
 ---
-description: "Rewrite a verbose bug ticket into a compact, accurate brief that keeps the standard bug structure (Environment, Steps to reproduce, Current behaviour, Desired behaviour) intact, so QA/PO can read it in under a minute and set the right priority/severity. Extra detail moves to a trailing 'More AI description' section instead of bloating the main read."
+description: "Rewrite a verbose bug ticket — or draft a new one from a raw report — into a compact, accurate brief with a scannable 'At a glance' summary plus the standard bug structure (Environment, Steps to reproduce, Current behaviour, Desired behaviour), so a time-constrained QA/PO can judge relevance and priority in seconds. Deep technical detail moves to a trailing 'More AI description' section for whoever implements the fix, human or AI, instead of bloating the main read."
 mode: agent
 ---
 
 # Bug ticket brief
 
-A companion to `/tldr` for one specific case: an existing **bug ticket**
-that is too verbose, unclear, or padded with implementation narrative for
-a QA engineer or PO to quickly judge real-world impact and set priority /
-severity. Unlike `/tldr`, the output structure is **fixed**, because the
-point here is to preserve the ticket's own shape while cutting the noise —
-not to pick whatever headers fit.
+A companion to `/tldr` for two related cases: rewriting an existing
+**bug ticket** that is too verbose, unclear, or padded with
+implementation narrative, and drafting a **new** one from whatever a
+reporter (service, support, QA) types in. Either way the goal is the
+same — let a QA engineer or PO quickly judge real-world impact and set
+priority/severity. Unlike `/tldr`, the output structure is **fixed**,
+because the point here is to preserve (or establish) the ticket's own
+shape while cutting the noise — not to pick whatever headers fit.
+
+This brief has two readers with very different needs, and everything
+below is built around that split:
+- A **human** decides whether the fix is relevant and how urgent it is.
+  They have limited time and switch between many tickets — the
+  `At a glance` block and the four main sections exist for them, and
+  must stay ruthlessly concise. No pamphlet-text: no filler, no restated
+  points, no padding to sound thorough.
+- Whoever **implements** the fix — possibly an AI — needs the deep
+  technical detail: code/class references, exact mechanism, edge cases.
+  That belongs in the trailing `More AI description` section, where
+  density and length are fine.
 
 ## Inputs (ask if missing)
 
-- A URL (GitHub issue, Jira ticket) or pasted text (ticket body, Slack
-  report, AI-drafted description). Prefer a link over a paraphrase.
-- For GitHub: fetch with `gh issue view <url> --json title,body,labels,comments`.
+- A URL (GitHub issue, Jira ticket), pasted text (ticket body, Slack
+  report, AI-drafted description) of an **existing** ticket to rewrite —
+  or a reporter's raw, possibly-incomplete description of a bug they
+  want **filed as a new ticket**. Prefer a link over a paraphrase when
+  rewriting.
+- For GitHub: fetch with `gh issue view <url> --json title,body,labels,comments,state`.
   If comments exist, fetch the whole thread — later comments often
   supersede the original report (repro narrowed down, workaround found,
-  root cause identified).
+  root cause identified). `state` (open/closed) grounds the `At a
+  glance` Status bullet.
 - If the fetch fails (404, no access), say so and ask for the text to be
   pasted instead. Never guess at content.
+- **Creating a new ticket**: treat the reporter's message as the seed.
+  There's no existing ticket to fall back on, so see "Never guess" below
+  for how gaps are handled differently here — asking is the default, not
+  the exception.
 
 ## What to do
 
@@ -40,12 +62,53 @@ header anyway and write `_Not specified in source._` under it. Never
 delete a header and never invent content to fill a gap; the whole point is
 an accurate rewrite, not a fabricated one.
 
+### At a glance (write this first)
+
+Before the four sections, write a compact block, header `### At a
+glance`, exactly three bullets, one sentence each:
+
+- **Impact:** — the same real-world-consequence sentence required as
+  Current behaviour's lead (see point 1 below) — reuse it verbatim here,
+  don't paraphrase a second version; there should be one sentence, not
+  two slightly different ones.
+- **Status:** — confirmed root cause vs. unresolved; fixed/merged vs.
+  still open, with a tracking issue if work split off elsewhere (e.g.
+  "fix merged, follow-up tracked in #1482"). Ground this in the fetched
+  `state` (open/closed) when available. For a brand-new ticket being
+  drafted, this is usually just "root cause not yet investigated" —
+  don't invent a status that hasn't happened yet.
+- **Scope:** — which installs/versions/deployment types are actually
+  affected, distilled from Environment — not the raw version list, the
+  answer to "does this affect me."
+
+Same rules as everywhere else: one clause per bullet, no em-dash-chained
+facts, and `_Unclear from source: ..._` (or ask, per "Never guess" below)
+rather than a confident-sounding guess. This block is the 10-second read
+— if a bullet needs a second sentence to make sense, that sentence
+belongs in the detailed section below, not here.
+
 ### Per-section rules
 
 - **Environment and versions used** — product/module version(s), OS/
   browser, deployment topology, prerequisite config. Only what's actually
   needed to reproduce or to judge which installs are affected — not
-  padding.
+  padding. See "Module versions and deployment type" below.
+- **Steps to reproduce** — numbered, clear, and actionable. Keep exact
+  values that appear in the source (versions, file sizes, entry counts,
+  error codes, thresholds) — don't launder "4.94GB, 7,899 ZIP entries"
+  into "a large file." Precision here is what makes a report
+  reproducible; do not add steps the source doesn't imply. See
+  "Real-world usage vs. engineered reproducer", "Reproduction steps vs.
+  diagnostic/verification steps", and "Test/reproducer modules
+  referenced in steps to reproduce" below.
+- **Current behaviour** — ground abstract or placeholder terminology,
+  then lead with the real-world consequence, the concrete observable
+  symptom, and the confirmed-vs-unresolved status of any causal claim.
+  See "Current behaviour: what to lead with" below.
+- **Desired behaviour** — mirror Current behaviour's grounding, then
+  lead with the real-world consequence of the fix and the concrete
+  desired outcome. If the source states none, write `_Not specified in
+  source._` for both. See "Desired behaviour: what to lead with" below.
 
 ### Module versions and deployment type
 
@@ -71,12 +134,6 @@ If either is missing:
   explicit gap — e.g. `_Module version: not specified — please
   confirm._` or `_Deployment type: not specified — please confirm._` —
   so the reader knows it was flagged, not overlooked.
-
-- **Steps to reproduce** — numbered, clear, and actionable. Keep exact
-  values that appear in the source (versions, file sizes, entry counts,
-  error codes, thresholds) — don't launder "4.94GB, 7,899 ZIP entries"
-  into "a large file." Precision here is what makes a report
-  reproducible; do not add steps the source doesn't imply.
 
 ### Real-world usage vs. engineered reproducer
 
@@ -110,6 +167,25 @@ necessary — not the other way around. Before finalizing this section:
    makes re-testing far easier; don't drop it in favor of a paraphrased
    description that looks simpler but is actually harder to execute
    precisely.
+
+### Reproduction steps vs. diagnostic/verification steps
+
+Sources often list, as numbered steps, actions that aren't actually
+needed to *reproduce* the symptom — they're how the reporter *confirmed
+why* it happens. A step belongs in "Steps to reproduce" only if doing it
+produces or reveals the reported symptom itself (an error, a slow/failed
+operation, wrong output a tester would see). A step that instead compares
+internal data layouts, analyzes file/memory ordering, or monitors
+internals for root-cause evidence is a **diagnostic/verification
+technique**, not a reproduction step — move it to "More AI description"
+(e.g. under "How this was diagnosed/measured"), even when the source
+numbers it alongside the real repro actions. This matters most when the
+diagnostic step is vague about method (no concrete tool/command given,
+just "compare X against Y") — leaving it in Steps to reproduce as if a
+tester could just follow it makes the section harder to execute, not
+easier. Don't silently drop it, though: relocate it with attribution,
+since it's still useful supporting evidence for engineers reviewing the
+brief.
 
 **Commands, code, and config are copied verbatim — never paraphrased,
 truncated, or merged**, whenever they're part of the steps (whether as
@@ -158,81 +234,91 @@ module. Handle it explicitly, in this order:
 Never paraphrase around this gap or quietly drop the step — a missing
 repro module is itself information a QA engineer needs before spending
 time on the ticket.
-- **Current behaviour** — first, ground abstract or placeholder
-  terminology; then the three things below, in order:
-  0. **If the source's own steps use placeholder/synthetic naming**
-     (`optionA`/`optionB`, `repro:fooField`, `GenericType`, or similar
-     names invented purely to isolate the bug), don't restate those
-     names in your lead sentence — a reader can't picture "boundOption"
-     or "j:bindedComponent." First state the general, familiar
-     mechanism or feature being exercised, in terms anyone who's used a
-     CMS/admin form would recognize (e.g. "a Type dropdown is supposed
-     to show only the fields relevant to whichever type you pick").
-     Only after that do the placeholder names from the source. If a
-     small concrete example would make the mechanism click (e.g. "such
-     as a video-URL field only appearing once 'Video' is chosen"), you
-     may add one — but mark it explicitly as an example ("for example…",
-     "illustratively…"), never presented as the literal reported
-     scenario unless the source actually describes one. This keeps the
-     lead honest (nothing invented is stated as fact) while making the
-     bug map to something the reader has actually seen.
-  1. **Lead with the real-world consequence**, as its own first sentence,
-     in plain language a non-engineer would understand: what does an
-     actual site visitor, editor, or admin experience because of this
-     bug? State the worst realistic consequence the source actually
-     supports (e.g. "one broken page can eventually make the whole site
-     stop serving pages to visitors"), not the narrow technical event
-     (an exception name, an internal resource name). This sentence is
-     what lets a PO set severity — don't bury it in "More AI
-     description" or skip it because the source itself never states it
-     in these terms; infer it from the mechanism described, but don't
-     invent a consequence the source doesn't support.
-  2. Then the concrete observable symptom a tester would see when
-     reproducing it (status codes, counts, what fails and when).
-  3. **State the assessed likelihood of any causal or diagnostic claim,
-     explicitly**, whenever the source lets you tell confirmed apart
-     from unresolved. If the source says a mechanism was verified by
-     direct evidence (e.g. thread-dump analysis ruling out an
-     alternative explanation, logs, a reproducible test), say it's
-     confirmed. If the source explicitly says a cause, trigger, or
-     mechanism was not identified or not proven, carry that qualifier
-     into the brief in plain terms — don't let it evaporate into a
-     flat, confident-sounding sentence. A short explicit line — e.g.
-     "Confirmed: the capacity was genuinely lost, not legitimately held
-     (verified by thread-dump analysis). Not proven: what originally
-     caused the first slot to be lost." — is preferred over blending
-     the two into one narrative. Never state a suspected/unresolved
-     cause with the same confidence as a proven one.
-  Avoid internal-only vocabulary in this section — internal resource/
-  permit names, exception class names, thread/queue terminology. Say "a
-  slot of the server's page-rendering capacity" rather than "a
-  module-generation permit"; the literal internal names still belong in
-  "More AI description" for engineers. Push deep root-cause narrative
-  (class/method names, internal call chains, algorithmic explanation) to
-  "More AI description" entirely.
-- **Desired behaviour** — first, ground abstract or placeholder
-  terminology (same as Current behaviour's point 0); then two more
-  things, in this order, mirroring Current behaviour:
-  0. **If Current behaviour needed grounding, mirror it here too** —
-     don't let the fixed-state description revert to the source's raw
-     placeholder names as its lead. Describe the fixed behavior in terms
-     of the same familiar mechanism/example used in Current behaviour
-     (e.g. "the video-URL field should only appear once 'Video' is
-     chosen" rather than restarting from `j:bindedComponent`), so the
-     before/after reads as one continuous story a reader can follow
-     without re-decoding identifiers.
-  1. **Lead with the real-world consequence of the fix**, as its own
-     first sentence, in plain language: what would an actual site
-     visitor, editor, or admin experience once this is fixed, that they
-     don't get today? Only state this if the source (or the mechanism
-     described in Current behaviour) solidly supports it — see "Never
-     guess" below if it doesn't.
-  2. Then the concrete technical desired behaviour, per the source (what
-     the system/code should do instead).
-  If the source doesn't state a desired behaviour at all, write
-  `_Not specified in source._` for both parts. You may propose one, but
-  only inside "More AI description," clearly marked as inferred, not
-  stated as fact.
+
+### Current behaviour: what to lead with
+
+Ground abstract or placeholder terminology first, then cover these,
+in order:
+
+0. **If the source's own steps use placeholder/synthetic naming**
+   (`optionA`/`optionB`, `repro:fooField`, `GenericType`, or similar
+   names invented purely to isolate the bug), don't restate those
+   names in your lead sentence — a reader can't picture "boundOption"
+   or "j:bindedComponent." First state the general, familiar
+   mechanism or feature being exercised, in terms anyone who's used a
+   CMS/admin form would recognize (e.g. "a Type dropdown is supposed
+   to show only the fields relevant to whichever type you pick").
+   Only after that do the placeholder names from the source. If a
+   small concrete example would make the mechanism click (e.g. "such
+   as a video-URL field only appearing once 'Video' is chosen"), you
+   may add one — but mark it explicitly as an example ("for example…",
+   "illustratively…"), never presented as the literal reported
+   scenario unless the source actually describes one. This keeps the
+   lead honest (nothing invented is stated as fact) while making the
+   bug map to something the reader has actually seen.
+1. **Lead with the real-world consequence**, as its own first sentence,
+   in plain language a non-engineer would understand: what does an
+   actual site visitor, editor, or admin experience because of this
+   bug? State the worst realistic consequence the source actually
+   supports (e.g. "one broken page can eventually make the whole site
+   stop serving pages to visitors"), not the narrow technical event
+   (an exception name, an internal resource name). This sentence is
+   what lets a PO set severity — don't bury it in "More AI
+   description" or skip it because the source itself never states it
+   in these terms; infer it from the mechanism described, but don't
+   invent a consequence the source doesn't support.
+2. Then the concrete observable symptom a tester would see when
+   reproducing it (status codes, counts, what fails and when).
+3. **State the assessed likelihood of any causal or diagnostic claim,
+   explicitly**, whenever the source lets you tell confirmed apart
+   from unresolved. If the source says a mechanism was verified by
+   direct evidence (e.g. thread-dump analysis ruling out an
+   alternative explanation, logs, a reproducible test), say it's
+   confirmed. If the source explicitly says a cause, trigger, or
+   mechanism was not identified or not proven, carry that qualifier
+   into the brief in plain terms — don't let it evaporate into a
+   flat, confident-sounding sentence. A short explicit line — e.g.
+   "Confirmed: the capacity was genuinely lost, not legitimately held
+   (verified by thread-dump analysis). Not proven: what originally
+   caused the first slot to be lost." — is preferred over blending
+   the two into one narrative. Never state a suspected/unresolved
+   cause with the same confidence as a proven one.
+
+Avoid internal-only vocabulary in this section — internal resource/
+permit names, exception class names, thread/queue terminology. Say "a
+slot of the server's page-rendering capacity" rather than "a
+module-generation permit"; the literal internal names still belong in
+"More AI description" for engineers. Push deep root-cause narrative
+(class/method names, internal call chains, algorithmic explanation) to
+"More AI description" entirely.
+
+### Desired behaviour: what to lead with
+
+Ground abstract or placeholder terminology first (same as Current
+behaviour's point 0 above), then cover these two, mirroring Current
+behaviour:
+
+0. **If Current behaviour needed grounding, mirror it here too** —
+   don't let the fixed-state description revert to the source's raw
+   placeholder names as its lead. Describe the fixed behavior in terms
+   of the same familiar mechanism/example used in Current behaviour
+   (e.g. "the video-URL field should only appear once 'Video' is
+   chosen" rather than restarting from `j:bindedComponent`), so the
+   before/after reads as one continuous story a reader can follow
+   without re-decoding identifiers.
+1. **Lead with the real-world consequence of the fix**, as its own
+   first sentence, in plain language: what would an actual site
+   visitor, editor, or admin experience once this is fixed, that they
+   don't get today? Only state this if the source (or the mechanism
+   described in Current behaviour) solidly supports it — see "Never
+   guess" below if it doesn't.
+2. Then the concrete technical desired behaviour, per the source (what
+   the system/code should do instead).
+
+If the source doesn't state a desired behaviour at all, write
+`_Not specified in source._` for both parts. You may propose one, but
+only inside "More AI description," clearly marked as inferred, not
+stated as fact.
 
 ### Never guess — ask, or mark it unknown
 
@@ -255,6 +341,24 @@ of a mechanism the source already fully describes (e.g. "permits run out
 → other pages fail" is a direct restatement, not a guess). Anything less
 certain than that gets a question or an explicit "unclear" marker — never
 a smoothed-over sentence that reads as fact.
+
+### Rewriting an existing ticket vs. creating a new one
+
+The escalate-only-for-significant-gaps rule above is calibrated for
+**rewriting** — the source ticket already exists, so a smaller gap can
+just be marked unclear without slowing anything down.
+
+When there's no existing ticket — a reporter is typing a description so
+one can be **created** — flip the default: ask for whatever's needed to
+fill Environment, Steps to reproduce, Current behaviour, and Desired
+behaviour, not just the severity-changing gaps. There's no cost to
+asking now, before the ticket is filed, and a ticket that ships full of
+`_Unclear from source_` markers that could've been answered in the same
+conversation wastes the next reader's time more than one well-placed
+question would have. Still don't interrogate for things that don't
+change the read (e.g. don't ask for a stack trace on a cosmetic CSS
+bug). Whatever the reporter genuinely doesn't know after being asked
+still gets marked `_Not specified — please confirm._`, never guessed.
 
 ### Economy — cut restatement, don't just shorten sentences
 
@@ -308,6 +412,11 @@ Concretely:
 
 ## More AI description (optional trailing section)
 
+This section's reader is whoever implements the fix — possibly an AI,
+per the audience split at the top of this doc — not the time-constrained
+human deciding relevance. Technical density and length are fine here in
+a way they aren't above.
+
 Anything that's genuinely useful but not needed for a first read goes
 under a trailing `### More AI description` section: root-cause mechanism,
 code/class references, measured statistics beyond the minimal repro
@@ -335,18 +444,25 @@ subject line alone, propose a replacement as the very first line:
 `Suggested title: <plain, symptom-first title>` — followed by `(original:
 "<the source title>")` so the change is traceable, not silent.
 
+When creating a new ticket from scratch, there's no original to compare
+against — just propose the title the same way, without the `(original:
+...)` suffix.
+
 ## Output rules
 
 - **Default output is a single fenced markdown code block** (` ```markdown `
-  … ` ``` `) containing the rewritten body — the four sections plus the
-  optional "More AI description" — exactly as it should read if pasted
-  straight back into the ticket's description field, headers and all. No
-  file, no artefact. Put `Suggested title: …` (if any) as a plain line
-  above the block, since a ticket's title field is separate from its body.
-  This is the default for every run, not something to be asked for.
-- The four main sections must be readable well under a minute; that's the
-  actual acceptance test — can a QA/PO reader set priority and severity
-  from them alone.
+  … ` ``` `) containing the rewritten body — `At a glance`, the four
+  sections, and the optional "More AI description" — exactly as it should
+  read if pasted into the ticket's description field, whether filing a
+  new ticket or updating an existing one, headers and all. No file, no
+  artefact. Put `Suggested title: …` (if any) as a plain line above the
+  block, since a ticket's title field is separate from its body. This is
+  the default for every run, not something to be asked for.
+- Two acceptance tests, one per audience: `At a glance` must be readable
+  in about 10 seconds — can the human reader judge relevance and urgency
+  from those three bullets alone. The four main sections must be readable
+  well under a minute — can a QA/PO reader set priority and severity from
+  them alone, without needing "More AI description."
 - Never compress away exact reproduction values — that's the one place
   this differs from `/tldr`'s looser, adaptive digest.
 - Say what's unclear or contradictory instead of smoothing it into a
