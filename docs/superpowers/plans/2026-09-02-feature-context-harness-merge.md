@@ -775,7 +775,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
 - [ ] **Step 4: Run the tests to verify they pass**
 
 Run: `pnpm vitest run tests/unit/sensors/ac-validator.test.ts`
-Expected: PASS, 3 tests.
+Expected: PASS, 4 tests (1 in `parseTestFile`, 2 in `matchesFeature`, 1 in `buildAcInventory`).
 
 - [ ] **Step 5: Remove the superseded JS original**
 
