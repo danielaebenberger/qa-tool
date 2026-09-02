@@ -1,6 +1,10 @@
 ---
+name: qa-coverage-map
 description: "Build a coverage map for one Jahia repository — a per-area view, not a single coverage number."
-mode: agent
+kind: skill
+pillar: feature-validation
+version: "1.0"
+see_also: [qa-cypress-analyze, qa-ac-validate]
 ---
 
 # Coverage map for a single Jahia repo

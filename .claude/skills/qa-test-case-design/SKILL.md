@@ -1,6 +1,10 @@
 ---
-name: test-case-design
-description: "Multi-step workflow for designing a coherent set of test cases for a Jahia feature: risk storming → case generation → trace matrix → review checklist. Use when: a QA engineer needs more than a one-shot list (e.g. a sizeable epic, a regression-prone area, a release candidate), or when /define-testcases needs to be expanded into a deeper artefact set."
+name: qa-test-case-design
+description: "Multi-step workflow for designing a coherent set of test cases for a Jahia feature: risk storming → case generation → trace matrix → review checklist. Use when a QA engineer needs more than a one-shot list, or when qa-define-testcases needs to be expanded into a deeper artefact set."
+kind: skill
+pillar: test-case-identification
+version: "1.0"
+see_also: [qa-define-testcases]
 ---
 
 # Skill — Test Case Design (Jahia)

@@ -1,6 +1,9 @@
 ---
+name: qa-tldr
 description: "Digest a verbose GitHub issue/PR, Jira ticket, or AI-generated description into a fast, practical summary before deciding what QA work it actually needs."
-mode: agent
+kind: skill
+pillar: test-case-identification
+version: "1.0"
 ---
 
 # TL;DR a ticket, PR, or description

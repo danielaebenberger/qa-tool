@@ -1,6 +1,9 @@
 ---
-description: "Rewrite a verbose bug ticket — or draft a new one from a raw report — into a compact, accurate brief with a scannable 'At a glance' summary plus the standard bug structure (Environment, Steps to reproduce, Current behaviour, Desired behaviour), so a time-constrained QA/PO can judge relevance and priority in seconds. Deep technical detail moves to a trailing 'More AI description' section for whoever implements the fix, human or AI, instead of bloating the main read."
-mode: agent
+name: qa-bug-brief
+description: "Rewrite a verbose bug ticket — or draft a new one from a raw report — into a compact, accurate brief with a scannable 'At a glance' summary plus the standard bug structure, so a time-constrained QA/PO can judge relevance and priority in seconds."
+kind: skill
+pillar: test-case-identification
+version: "1.0"
 ---
 
 # Bug ticket brief

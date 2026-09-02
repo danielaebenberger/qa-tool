@@ -1,6 +1,10 @@
 ---
+name: qa-define-testcases
 description: "Help a QA engineer identify, draft, and challenge test cases for a Jahia story or bug ticket. Use during refinement or the test phase of a ticket."
-mode: agent
+kind: skill
+pillar: test-case-identification
+version: "1.0"
+see_also: [qa-test-case-design]
 ---
 
 # Define / challenge test cases for a ticket

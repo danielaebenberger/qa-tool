@@ -1,6 +1,9 @@
 ---
 name: qa-dashboard-widget
-description: "End-to-end workflow for adding a new widget to the qa-tool dashboard: data source → typed contract → component → tests → wiring. Use when: implementing a new metric, stability indicator, or motivation surface inside qa-tool/src/dashboard/."
+description: "End-to-end workflow for adding a new widget to the qa-tool dashboard: data source → typed contract → component → tests → wiring. Use when implementing a new metric, stability indicator, or motivation surface inside qa-tool/src/dashboard/."
+kind: skill
+pillar: harness-engineering
+version: "1.0"
 ---
 
 # Skill — Add a QA Dashboard Widget
