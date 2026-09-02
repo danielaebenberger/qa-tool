@@ -92,7 +92,23 @@ belongs in the detailed section below, not here.
 - **Environment and versions used** — product/module version(s), OS/
   browser, deployment topology, prerequisite config. Only what's actually
   needed to reproduce or to judge which installs are affected — not
-  padding.
+  padding. See "Module versions and deployment type" below.
+- **Steps to reproduce** — numbered, clear, and actionable. Keep exact
+  values that appear in the source (versions, file sizes, entry counts,
+  error codes, thresholds) — don't launder "4.94GB, 7,899 ZIP entries"
+  into "a large file." Precision here is what makes a report
+  reproducible; do not add steps the source doesn't imply. See
+  "Real-world usage vs. engineered reproducer", "Reproduction steps vs.
+  diagnostic/verification steps", and "Test/reproducer modules
+  referenced in steps to reproduce" below.
+- **Current behaviour** — ground abstract or placeholder terminology,
+  then lead with the real-world consequence, the concrete observable
+  symptom, and the confirmed-vs-unresolved status of any causal claim.
+  See "Current behaviour: what to lead with" below.
+- **Desired behaviour** — mirror Current behaviour's grounding, then
+  lead with the real-world consequence of the fix and the concrete
+  desired outcome. If the source states none, write `_Not specified in
+  source._` for both. See "Desired behaviour: what to lead with" below.
 
 ### Module versions and deployment type
 
@@ -118,12 +134,6 @@ If either is missing:
   explicit gap — e.g. `_Module version: not specified — please
   confirm._` or `_Deployment type: not specified — please confirm._` —
   so the reader knows it was flagged, not overlooked.
-
-- **Steps to reproduce** — numbered, clear, and actionable. Keep exact
-  values that appear in the source (versions, file sizes, entry counts,
-  error codes, thresholds) — don't launder "4.94GB, 7,899 ZIP entries"
-  into "a large file." Precision here is what makes a report
-  reproducible; do not add steps the source doesn't imply.
 
 ### Real-world usage vs. engineered reproducer
 
@@ -224,81 +234,91 @@ module. Handle it explicitly, in this order:
 Never paraphrase around this gap or quietly drop the step — a missing
 repro module is itself information a QA engineer needs before spending
 time on the ticket.
-- **Current behaviour** — first, ground abstract or placeholder
-  terminology; then the three things below, in order:
-  0. **If the source's own steps use placeholder/synthetic naming**
-     (`optionA`/`optionB`, `repro:fooField`, `GenericType`, or similar
-     names invented purely to isolate the bug), don't restate those
-     names in your lead sentence — a reader can't picture "boundOption"
-     or "j:bindedComponent." First state the general, familiar
-     mechanism or feature being exercised, in terms anyone who's used a
-     CMS/admin form would recognize (e.g. "a Type dropdown is supposed
-     to show only the fields relevant to whichever type you pick").
-     Only after that do the placeholder names from the source. If a
-     small concrete example would make the mechanism click (e.g. "such
-     as a video-URL field only appearing once 'Video' is chosen"), you
-     may add one — but mark it explicitly as an example ("for example…",
-     "illustratively…"), never presented as the literal reported
-     scenario unless the source actually describes one. This keeps the
-     lead honest (nothing invented is stated as fact) while making the
-     bug map to something the reader has actually seen.
-  1. **Lead with the real-world consequence**, as its own first sentence,
-     in plain language a non-engineer would understand: what does an
-     actual site visitor, editor, or admin experience because of this
-     bug? State the worst realistic consequence the source actually
-     supports (e.g. "one broken page can eventually make the whole site
-     stop serving pages to visitors"), not the narrow technical event
-     (an exception name, an internal resource name). This sentence is
-     what lets a PO set severity — don't bury it in "More AI
-     description" or skip it because the source itself never states it
-     in these terms; infer it from the mechanism described, but don't
-     invent a consequence the source doesn't support.
-  2. Then the concrete observable symptom a tester would see when
-     reproducing it (status codes, counts, what fails and when).
-  3. **State the assessed likelihood of any causal or diagnostic claim,
-     explicitly**, whenever the source lets you tell confirmed apart
-     from unresolved. If the source says a mechanism was verified by
-     direct evidence (e.g. thread-dump analysis ruling out an
-     alternative explanation, logs, a reproducible test), say it's
-     confirmed. If the source explicitly says a cause, trigger, or
-     mechanism was not identified or not proven, carry that qualifier
-     into the brief in plain terms — don't let it evaporate into a
-     flat, confident-sounding sentence. A short explicit line — e.g.
-     "Confirmed: the capacity was genuinely lost, not legitimately held
-     (verified by thread-dump analysis). Not proven: what originally
-     caused the first slot to be lost." — is preferred over blending
-     the two into one narrative. Never state a suspected/unresolved
-     cause with the same confidence as a proven one.
-  Avoid internal-only vocabulary in this section — internal resource/
-  permit names, exception class names, thread/queue terminology. Say "a
-  slot of the server's page-rendering capacity" rather than "a
-  module-generation permit"; the literal internal names still belong in
-  "More AI description" for engineers. Push deep root-cause narrative
-  (class/method names, internal call chains, algorithmic explanation) to
-  "More AI description" entirely.
-- **Desired behaviour** — first, ground abstract or placeholder
-  terminology (same as Current behaviour's point 0); then two more
-  things, in this order, mirroring Current behaviour:
-  0. **If Current behaviour needed grounding, mirror it here too** —
-     don't let the fixed-state description revert to the source's raw
-     placeholder names as its lead. Describe the fixed behavior in terms
-     of the same familiar mechanism/example used in Current behaviour
-     (e.g. "the video-URL field should only appear once 'Video' is
-     chosen" rather than restarting from `j:bindedComponent`), so the
-     before/after reads as one continuous story a reader can follow
-     without re-decoding identifiers.
-  1. **Lead with the real-world consequence of the fix**, as its own
-     first sentence, in plain language: what would an actual site
-     visitor, editor, or admin experience once this is fixed, that they
-     don't get today? Only state this if the source (or the mechanism
-     described in Current behaviour) solidly supports it — see "Never
-     guess" below if it doesn't.
-  2. Then the concrete technical desired behaviour, per the source (what
-     the system/code should do instead).
-  If the source doesn't state a desired behaviour at all, write
-  `_Not specified in source._` for both parts. You may propose one, but
-  only inside "More AI description," clearly marked as inferred, not
-  stated as fact.
+
+### Current behaviour: what to lead with
+
+Ground abstract or placeholder terminology first, then cover these,
+in order:
+
+0. **If the source's own steps use placeholder/synthetic naming**
+   (`optionA`/`optionB`, `repro:fooField`, `GenericType`, or similar
+   names invented purely to isolate the bug), don't restate those
+   names in your lead sentence — a reader can't picture "boundOption"
+   or "j:bindedComponent." First state the general, familiar
+   mechanism or feature being exercised, in terms anyone who's used a
+   CMS/admin form would recognize (e.g. "a Type dropdown is supposed
+   to show only the fields relevant to whichever type you pick").
+   Only after that do the placeholder names from the source. If a
+   small concrete example would make the mechanism click (e.g. "such
+   as a video-URL field only appearing once 'Video' is chosen"), you
+   may add one — but mark it explicitly as an example ("for example…",
+   "illustratively…"), never presented as the literal reported
+   scenario unless the source actually describes one. This keeps the
+   lead honest (nothing invented is stated as fact) while making the
+   bug map to something the reader has actually seen.
+1. **Lead with the real-world consequence**, as its own first sentence,
+   in plain language a non-engineer would understand: what does an
+   actual site visitor, editor, or admin experience because of this
+   bug? State the worst realistic consequence the source actually
+   supports (e.g. "one broken page can eventually make the whole site
+   stop serving pages to visitors"), not the narrow technical event
+   (an exception name, an internal resource name). This sentence is
+   what lets a PO set severity — don't bury it in "More AI
+   description" or skip it because the source itself never states it
+   in these terms; infer it from the mechanism described, but don't
+   invent a consequence the source doesn't support.
+2. Then the concrete observable symptom a tester would see when
+   reproducing it (status codes, counts, what fails and when).
+3. **State the assessed likelihood of any causal or diagnostic claim,
+   explicitly**, whenever the source lets you tell confirmed apart
+   from unresolved. If the source says a mechanism was verified by
+   direct evidence (e.g. thread-dump analysis ruling out an
+   alternative explanation, logs, a reproducible test), say it's
+   confirmed. If the source explicitly says a cause, trigger, or
+   mechanism was not identified or not proven, carry that qualifier
+   into the brief in plain terms — don't let it evaporate into a
+   flat, confident-sounding sentence. A short explicit line — e.g.
+   "Confirmed: the capacity was genuinely lost, not legitimately held
+   (verified by thread-dump analysis). Not proven: what originally
+   caused the first slot to be lost." — is preferred over blending
+   the two into one narrative. Never state a suspected/unresolved
+   cause with the same confidence as a proven one.
+
+Avoid internal-only vocabulary in this section — internal resource/
+permit names, exception class names, thread/queue terminology. Say "a
+slot of the server's page-rendering capacity" rather than "a
+module-generation permit"; the literal internal names still belong in
+"More AI description" for engineers. Push deep root-cause narrative
+(class/method names, internal call chains, algorithmic explanation) to
+"More AI description" entirely.
+
+### Desired behaviour: what to lead with
+
+Ground abstract or placeholder terminology first (same as Current
+behaviour's point 0 above), then cover these two, mirroring Current
+behaviour:
+
+0. **If Current behaviour needed grounding, mirror it here too** —
+   don't let the fixed-state description revert to the source's raw
+   placeholder names as its lead. Describe the fixed behavior in terms
+   of the same familiar mechanism/example used in Current behaviour
+   (e.g. "the video-URL field should only appear once 'Video' is
+   chosen" rather than restarting from `j:bindedComponent`), so the
+   before/after reads as one continuous story a reader can follow
+   without re-decoding identifiers.
+1. **Lead with the real-world consequence of the fix**, as its own
+   first sentence, in plain language: what would an actual site
+   visitor, editor, or admin experience once this is fixed, that they
+   don't get today? Only state this if the source (or the mechanism
+   described in Current behaviour) solidly supports it — see "Never
+   guess" below if it doesn't.
+2. Then the concrete technical desired behaviour, per the source (what
+   the system/code should do instead).
+
+If the source doesn't state a desired behaviour at all, write
+`_Not specified in source._` for both parts. You may propose one, but
+only inside "More AI description," clearly marked as inferred, not
+stated as fact.
 
 ### Never guess — ask, or mark it unknown
 
