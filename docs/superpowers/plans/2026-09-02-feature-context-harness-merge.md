@@ -1614,8 +1614,8 @@ describe('renderCapabilitiesMarkdown', () => {
       { name: 'qa-run', description: 'Runs the full pipeline.', kind: 'skill', pillar: 'feature-validation', version: '1.0', seeAlso: [] },
     ];
     const md = renderCapabilitiesMarkdown(capabilities);
-    expect(md).toContain('## feature-validation');
-    expect(md).toContain('## test-case-identification');
+    expect(md).toContain('## Pillar 2 — Feature Validation');
+    expect(md).toContain('## Pillar 3 — Test-Case Identification');
     expect(md).toContain('qa-tldr');
     expect(md).toContain('qa-run');
   });
@@ -1632,17 +1632,15 @@ Expected: FAIL — module not found.
 ```typescript
 // scripts/generate-capabilities.ts
 #!/usr/bin/env -S node --experimental-strip-types
-/**
- * Regenerates docs/CAPABILITIES.md from the frontmatter of every
- * .claude/skills/*/SKILL.md, .claude/agents/*.agent.md, and
- * src/harness/sensors/*/SENSOR.md file. Never hand-edit CAPABILITIES.md —
- * this script is the single source of truth for its content
- * (capabilities-check.yml enforces that in CI).
- *
- * No third-party YAML parser: frontmatter here is a flat key: value block,
- * optionally with a bracketed list value — a small hand-written parser
- * avoids adding a dependency for something this simple.
- */
+// Regenerates docs/CAPABILITIES.md from the frontmatter of every
+// .claude/skills/*/SKILL.md, .claude/agents/*.agent.md, and
+// src/harness/sensors/*/SENSOR.md file. Never hand-edit CAPABILITIES.md —
+// this script is the single source of truth for its content.
+// No third-party YAML parser: frontmatter is a flat key: value block,
+// optionally with a bracketed list value — uses a simple hand-written parser.
+// (Line comments, not a block comment, immediately after the shebang — a
+// block comment there tripped an esbuild/vitest parsing quirk when Task 13
+// was implemented.)
 import { readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
