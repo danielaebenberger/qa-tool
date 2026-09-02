@@ -524,10 +524,10 @@ rmdir _incoming/feature-context-harness/harness/guides/ac-templates \
       _incoming/feature-context-harness/templates 2>/dev/null || true
 ```
 
-- [ ] **Step 2: Verify counts match** (9 guide files, 5 template files)
+- [ ] **Step 2: Verify counts match** (12 guide files: 2 ac-templates + 2 doc-standards + 8 personas, 5 template files)
 
 Run: `find .claude/guides/ac-templates .claude/guides/doc-standards .claude/guides/personas -type f | wc -l && find .claude/templates -type f | wc -l`
-Expected: `9` then `5`.
+Expected: `12` then `5`.
 
 - [ ] **Step 3: Commit**
 
