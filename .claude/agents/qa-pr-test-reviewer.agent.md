@@ -1,7 +1,9 @@
 ---
-name: pr-test-reviewer
-description: "Read-only review of a test PR (Cypress/e2e/Selenium/unit) in any Jahia repo — coverage fit, convention fit, cross-repo idiom check, scope, and prior-feedback tracking. Use when: reviewing a PR that adds/changes tests."
-tools: ["read", "search", "grep", "bash", "webfetch"]
+name: qa-pr-test-reviewer
+description: "Read-only subagent that reviews test PRs across any Jahia repo for coverage fit, convention fit, and cross-repo idiom consistency."
+kind: agent
+pillar: harness-engineering
+version: "1.0"
 ---
 
 # Subagent — `pr-test-reviewer`

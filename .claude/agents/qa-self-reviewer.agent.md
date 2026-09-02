@@ -1,7 +1,9 @@
 ---
-name: qa-reviewer
-description: "Read-only inferential code-review subagent for qa-tool changes. Use when: reviewing a PR or a set of staged changes, especially anything touching the four QA pillars. Returns a single structured review."
-tools: ["read", "search", "grep"]
+name: qa-self-reviewer
+description: "Read-only subagent that reviews changes to qa-tool itself against the five pillar goals and CLAUDE.md's hard constraints."
+kind: agent
+pillar: harness-engineering
+version: "1.0"
 ---
 
 # Subagent — `qa-reviewer`
