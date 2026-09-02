@@ -1,9 +1,6 @@
----
-description: "Reference prompt capturing the original scaffold decisions for qa-tool. Useful context when adding major new structure."
-mode: agent
----
-
 # Bootstrap reference — `qa-tool`
+
+> Historical scaffold decisions, kept for context when adding major new structure.
 
 This prompt records the decisions made when the tool was first scaffolded.
 Use it as context when adding large new structural pieces.
