@@ -20,7 +20,7 @@ Use it as context when adding large new structural pieces.
 - **Four pillars**: `src/dashboard/`, `src/coverage/`, `src/test-cases/`,
   `src/motivation/` — shared layer in `src/core/`.
 
-Honour everything in [`AGENTS.md`](../../AGENTS.md) and
+Honour everything in [`CLAUDE.md`](../../CLAUDE.md) and
 [.github/instructions/typescript.instructions.md](../instructions/typescript.instructions.md).
 ├── README.md                 ← short, dev-focused; no marketing copy
 ├── src/

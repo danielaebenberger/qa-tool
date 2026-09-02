@@ -36,7 +36,7 @@ editable artefacts" in the domain instructions.
 | [`test-case-design`](.github/skills/test-case-design/SKILL.md) | skill | The ticket is too big for one prompt pass — an epic, a release candidate, a known regression-prone module | A fuller artefact: risk register → coverage discovery → test cases → trace matrix → coverage gaps → open questions |
 | [`qa-dashboard-widget`](.github/skills/qa-dashboard-widget/SKILL.md) | skill | You're adding a new metric/widget to the dashboard pillar (dev task, not a QA-analysis task) | A widget wired through a typed data contract, with loading/empty/error/stale/healthy states and tests |
 | [`bootstrap-qa-tool`](.github/prompts/bootstrap-qa-tool.prompt.md) | prompt | Reference only — records the original scaffold decisions | Not something you run day-to-day |
-| [`qa-reviewer`](.github/agents/qa-reviewer.agent.md) | agent | Reviewing a PR or staged changes to qa-tool itself | A read-only structured review against the four pillars and the hard constraints in `AGENTS.md` |
+| [`qa-reviewer`](.github/agents/qa-reviewer.agent.md) | agent | Reviewing a PR or staged changes to qa-tool itself | A read-only structured review against the four pillars and the hard constraints in `CLAUDE.md` |
 | [`pr-test-reviewer`](.github/agents/pr-test-reviewer.agent.md) | agent | Reviewing an open PR that adds/changes tests (Cypress/e2e, Selenium, unit) in any Jahia repo | A read-only structured review: coverage fit, convention fit, cross-repo idiom check, scope, and prior-feedback tracking on re-review |
 
 All of the above load

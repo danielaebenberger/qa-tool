@@ -12,7 +12,7 @@ to the calling agent.
 
 ## What to load before reviewing
 
-1. [`AGENTS.md`](../../AGENTS.md) — repo conventions and hard constraints.
+1. [`CLAUDE.md`](../../CLAUDE.md) — repo conventions and hard constraints.
 2. [`.github/instructions/qa-domain.instructions.md`](../instructions/qa-domain.instructions.md)
    — the four pillars and anti-patterns.
 3. [`.github/instructions/typescript.instructions.md`](../instructions/typescript.instructions.md)
