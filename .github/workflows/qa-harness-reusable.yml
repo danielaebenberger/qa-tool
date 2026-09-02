@@ -1,0 +1,123 @@
+name: QA Harness (reusable)
+
+on:
+  workflow_call:
+    inputs:
+      cypress-path:
+        description: "Path to the calling repo's Cypress e2e tests folder"
+        required: false
+        type: string
+        default: 'tests/cypress/e2e'
+      enable-doc-review:
+        description: "Whether to also run the doc-reviewer sensor (requires a filled doc-sources file in the caller repo)"
+        required: false
+        type: boolean
+        default: false
+      fail-on-only:
+        description: "Fail the job when .only is detected in any Cypress test"
+        required: false
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  sensors:
+    name: QA Sensors (Pillars A + B)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout caller repository
+        uses: actions/checkout@v4
+        with:
+          path: target
+          fetch-depth: 0
+
+      - name: Determine the ref the caller pinned
+        id: pin
+        run: |
+          # github.job_workflow_ref for a reusable-workflow job resolves to
+          # "owner/repo/.github/workflows/qa-harness-reusable.yml@<ref>"
+          # (e.g. "...@refs/tags/qa-harness-v1") — the ref after the last
+          # '@' is exactly what the calling repo pinned via `uses: ...@<ref>`.
+          # There is no simpler built-in context var for this; github.action_ref
+          # does not apply here (that's for composite/JS actions, not reusable
+          # workflow callers).
+          REF="${{ github.job_workflow_ref }}"
+          REF="${REF##*@}"
+          echo "ref=$REF" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout qa-tool sensors at this pinned ref
+        uses: actions/checkout@v4
+        with:
+          repository: danielaebenberger/qa-tool
+          ref: ${{ steps.pin.outputs.ref }}
+          path: qa-tool-sensors
+          sparse-checkout: |
+            src/harness/sensors
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install tsx globally (no full workspace install)
+        run: npm install -g tsx
+
+      - name: Run AC Validator
+        working-directory: target
+        run: |
+          tsx ../qa-tool-sensors/src/harness/sensors/ac-validator/ac-validator.ts \
+            --tests-dir "${{ inputs.cypress-path }}" \
+            --output /tmp/ac-inventory.json || true
+
+      - name: Run Cypress Analyzer
+        id: cypress_analyzer
+        working-directory: target
+        run: |
+          tsx ../qa-tool-sensors/src/harness/sensors/cypress-analyzer/cypress-analyzer.ts \
+            --tests-dir "${{ inputs.cypress-path }}" \
+            --output /tmp/cypress-adequacy-report.json
+          echo "exit_code=$?" >> "$GITHUB_OUTPUT"
+        continue-on-error: true
+
+      - name: Collect sensor outputs
+        id: collect
+        run: |
+          CY_SCORE=$(node -e "try { console.log(require('/tmp/cypress-adequacy-report.json').summary.averageQualityScore); } catch(e) { console.log('N/A'); }")
+          CY_GRADE=$(node -e "try { console.log(require('/tmp/cypress-adequacy-report.json').summary.overallGrade); } catch(e) { console.log('N/A'); }")
+          HAS_ONLY=$(node -e "try { console.log(require('/tmp/cypress-adequacy-report.json').summary.coverageSignals.hasOnlyTests); } catch(e) { console.log('false'); }")
+          {
+            echo "cy_score=$CY_SCORE"
+            echo "cy_grade=$CY_GRADE"
+            echo "has_only=$HAS_ONLY"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Post QA Harness report comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const hasOnly = '${{ steps.collect.outputs.has_only }}' === 'true';
+            const cyScore = '${{ steps.collect.outputs.cy_score }}';
+            const cyGrade = '${{ steps.collect.outputs.cy_grade }}';
+            const statusLine = hasOnly
+              ? '## 🔴 QA Harness — BLOCKED\n> `.only` detected in Cypress tests — PR cannot be merged until removed.'
+              : cyGrade === 'GOOD' ? '## 🟢 QA Harness — Sensors PASSED'
+              : cyGrade === 'FAIR' ? '## 🟡 QA Harness — Sensors FAIR (review gaps)'
+              : '## 🔴 QA Harness — Sensors POOR (action required)';
+            const body = `${statusLine}\n\n<!-- qa-harness-report -->\n| Metric | Value |\n|---|---|\n| Quality score | \`${cyScore}/100\` |\n| Grade | \`${cyGrade}\` |\n| \`.only\` detected | \`${hasOnly ? '⛔ YES' : '✅ No'}\` |\n`;
+            const { data: comments } = await github.rest.issues.listComments({ owner: context.repo.owner, repo: context.repo.repo, issue_number: context.issue.number });
+            const existing = comments.find(c => c.user.type === 'Bot' && c.body.includes('<!-- qa-harness-report -->'));
+            if (existing) {
+              await github.rest.issues.updateComment({ owner: context.repo.owner, repo: context.repo.repo, comment_id: existing.id, body });
+            } else {
+              await github.rest.issues.createComment({ owner: context.repo.owner, repo: context.repo.repo, issue_number: context.issue.number, body });
+            }
+
+      - name: Fail if .only detected and fail-on-only is true
+        if: inputs.fail-on-only == true
+        run: |
+          if [ "${{ steps.collect.outputs.has_only }}" = "true" ]; then
+            echo "::error::.only detected in Cypress tests — remove before merging."
+            exit 1
+          fi
