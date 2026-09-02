@@ -6,13 +6,13 @@
 
 | Name | Kind | Description | Version | See also |
 |---|---|---|---|---|
-| `qa-ac-validate` | skill | > | 1.0 | qa-define-testcases, qa-coverage-map |
+| `qa-ac-validate` | skill | Pillar A — Acceptance Criteria Validation. Operates in two modes: REFINEMENT: Reads a ticket or PRP plan and drafts acceptance criteria, flags gaps, and prepares a team meeting agenda for the QA expert. VALIDATION: Maps finalised ACs to code evidence and test coverage, produces a verdict matrix. Always produces a filled ac-matrix.md. Always keeps a QA expert in the loop. | 1.0 | qa-define-testcases, qa-coverage-map |
 | `qa-coverage-map` | skill | Build a coverage map for one Jahia repository — a per-area view, not a single coverage number. | 1.0 | qa-cypress-analyze, qa-ac-validate |
-| `qa-cypress-analyze` | skill | > | 1.0 | qa-coverage-map |
-| `qa-doc-review` | skill | > | 1.0 | — |
-| `qa-persona-uat` | skill | > | 1.0 | — |
-| `qa-report` | skill | > | 1.0 | — |
-| `qa-run` | skill | > | 1.0 | — |
+| `qa-cypress-analyze` | skill | Pillar B — Test Adequacy Review (Cypress-focused). Analyses the Cypress test suite in a Jahia repository for coverage adequacy. Goes beyond line/branch coverage to assess scenario, persona, multilingual, accessibility, and error-handling coverage. Produces a test-adequacy-review.md with findings and recommendations. | 1.0 | qa-coverage-map |
+| `qa-doc-review` | skill | Pillar D — Documentation Review. Evaluates whether documentation across all relevant sources (README, Academy, CHANGELOG, Migration guide, API docs, internal docs, support docs) reflects the user-visible changes of a feature. Requires human input (doc sources declaration) before evaluation can proceed. Produces a doc-review.md with a gap analysis and prioritised action list. | 1.0 | — |
+| `qa-persona-uat` | skill | Pillar C — Persona-based UAT. Selects relevant Jahia personas for a feature, generates concrete UAT scenarios for each persona, performs synthetic walkthroughs where Cypress evidence is absent, and produces a persona-ucat-pack.md for QA engineer review. Contains a mandatory human checkpoint before scenario execution. | 1.0 | — |
+| `qa-report` | skill | Stage 6 — QA Decision and Report Assembly. Assembles outputs from all four pillars (A: AC, B: Cypress, C: Persona UAT, D: Docs) into a final QA Harness Report and issues a release recommendation. Contains the final mandatory human checkpoint before the recommendation is acted upon. | 1.0 | — |
+| `qa-run` | skill | Full QA Harness pipeline orchestrator. Runs all six stages of the QA validation workflow in sequence, enforcing human checkpoints, chaining pillar outputs, and producing a final QA report with a release recommendation. Use /qa-run for a full pipeline run, or pass --pillars to run a subset. | 1.0 | — |
 | `qa-sensor-ac-validator` | sensor | Scans a Cypress test suite and produces a structured evidence inventory used by qa-ac-validate's VALIDATION mode. | 1.0 | — |
 | `qa-sensor-cypress-analyzer` | sensor | Analyses a Cypress suite for test adequacy — scenario, assertion, persona, multilingual, and error-path coverage plus structural smells. Exits non-zero if .only is present, gating CI. | 1.0 | — |
 | `qa-sensor-doc-reviewer` | sensor | Scans local docs (README/CHANGELOG/MIGRATION) and declared remote sources for terms extracted from a diff, flagging stale or auth-gated documentation. | 1.0 | — |

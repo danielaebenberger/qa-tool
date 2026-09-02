@@ -1,9 +1,9 @@
 #!/usr/bin/env -S node --experimental-strip-types
 // Regenerates docs/CAPABILITIES.md from the frontmatter of every
-// SKILL.md, agent.md, and SENSOR.md file. Never hand-edit CAPABILITIES.md —
-// this script is the single source of truth for its content.
-// No third-party YAML parser: frontmatter is a flat key: value block,
-// optionally with a bracketed list value — uses a simple hand-written parser.
+// .claude/skills/*/SKILL.md, .claude/agents/*.agent.md, and src/harness/sensors/*/SENSOR.md file.
+// Never hand-edit CAPABILITIES.md — this script is the single source of truth for its content.
+// No third-party YAML parser: frontmatter is a flat key: value block (with folded-scalar support)
+// — a simple hand-written parser avoids adding a dependency (capabilities-check.yml enforces in CI).
 import { readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -21,12 +21,29 @@ export function parseFrontmatter(content: string): Record<string, string> | null
   const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
   if (!match) return null;
   const block = match[1] as string;
+  const lines = block.split('\n');
   const result: Record<string, string> = {};
-  for (const line of block.split('\n')) {
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i] as string;
     const m = line.match(/^([a-zA-Z_]+):\s*(.*)$/);
     if (!m) continue;
     const key = m[1] as string;
-    let value = (m[2] as string).trim();
+    const rawValue = (m[2] as string).trim();
+
+    // Handle YAML block-scalar indicators (>, >-, |, |-)
+    if (/^[>|][-+]?$/.test(rawValue)) {
+      const collected: string[] = [];
+      let j = i + 1;
+      while (j < lines.length && /^\s+\S/.test(lines[j] as string)) {
+        collected.push((lines[j] as string).trim());
+        j++;
+      }
+      result[key] = collected.join(' ').trim();
+      i = j - 1;
+      continue;
+    }
+
+    let value = rawValue;
     if (value.startsWith('"') && value.endsWith('"')) value = value.slice(1, -1);
     if (value.startsWith('[') && value.endsWith(']')) value = value.slice(1, -1).trim();
     result[key] = value;
@@ -42,7 +59,12 @@ function toCapability(frontmatter: Record<string, string>): Capability | null {
     kind: frontmatter.kind as Capability['kind'],
     pillar: frontmatter.pillar,
     version: frontmatter.version ?? '1.0',
-    seeAlso: frontmatter.see_also ? frontmatter.see_also.split(',').map((s) => s.trim()).filter(Boolean) : [],
+    seeAlso: frontmatter.see_also
+      ? frontmatter.see_also
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean)
+      : [],
   };
 }
 
@@ -78,7 +100,13 @@ export function collectCapabilities(rootDir: string): Capability[] {
   return capabilities.sort((a, b) => a.name.localeCompare(b.name));
 }
 
-const PILLAR_ORDER = ['ci-insight', 'feature-validation', 'test-case-identification', 'team-motivation', 'harness-engineering'];
+const PILLAR_ORDER = [
+  'ci-insight',
+  'feature-validation',
+  'test-case-identification',
+  'team-motivation',
+  'harness-engineering',
+];
 const PILLAR_TITLES: Record<string, string> = {
   'ci-insight': 'Pillar 1 — CI Insight',
   'feature-validation': 'Pillar 2 — Feature Validation',
@@ -102,10 +130,17 @@ export function renderCapabilitiesMarkdown(capabilities: Capability[]): string {
   });
 
   for (const pillar of pillars) {
-    lines.push(`## ${PILLAR_TITLES[pillar] ?? pillar}`, '', '| Name | Kind | Description | Version | See also |', '|---|---|---|---|---|');
+    lines.push(
+      `## ${PILLAR_TITLES[pillar] ?? pillar}`,
+      '',
+      '| Name | Kind | Description | Version | See also |',
+      '|---|---|---|---|---|'
+    );
     for (const cap of capabilities.filter((c) => c.pillar === pillar)) {
       const seeAlso = cap.seeAlso.length ? cap.seeAlso.join(', ') : '—';
-      lines.push(`| \`${cap.name}\` | ${cap.kind} | ${cap.description} | ${cap.version} | ${seeAlso} |`);
+      lines.push(
+        `| \`${cap.name}\` | ${cap.kind} | ${cap.description} | ${cap.version} | ${seeAlso} |`
+      );
     }
     lines.push('');
   }
@@ -118,7 +153,9 @@ function runCli(): void {
   const capabilities = collectCapabilities(rootDir);
   const markdown = renderCapabilitiesMarkdown(capabilities);
   writeFileSync(join(rootDir, 'docs/CAPABILITIES.md'), markdown);
-  console.log(`[generate-capabilities] Wrote docs/CAPABILITIES.md with ${capabilities.length} entries.`);
+  console.log(
+    `[generate-capabilities] Wrote docs/CAPABILITIES.md with ${capabilities.length} entries.`
+  );
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
