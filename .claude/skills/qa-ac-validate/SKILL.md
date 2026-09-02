@@ -1,5 +1,4 @@
 ---
-mode: agent
 description: >
   Pillar A — Acceptance Criteria Validation.
   Operates in two modes:
@@ -8,12 +7,11 @@ description: >
     VALIDATION: Maps finalised ACs to code evidence and test coverage, 
                 produces a verdict matrix.
   Always produces a filled ac-matrix.md. Always keeps a QA expert in the loop.
-tools:
-  - read_file
-  - list_files
-  - search_files
-  - run_command
-applyTo: "**"
+name: qa-ac-validate
+kind: skill
+pillar: feature-validation
+version: "1.0"
+see_also: [qa-define-testcases, qa-coverage-map]
 ---
 
 # QA Harness — Pillar A: Acceptance Criteria Validation
@@ -61,7 +59,7 @@ For a **PRP plan** (`*.plan.md`), extract:
 
 Write a plain-language paragraph (2–4 sentences) describing:
 1. What changes for the user
-2. Which users are affected (link to personas from `harness/guides/personas/`)
+2. Which users are affected (link to personas from `.claude/guides/personas/`)
 3. What the user can now do that they could not before
 
 ### Step 3 — Draft acceptance criteria
@@ -125,7 +123,7 @@ Questions should be concrete and answerable in a 5-minute discussion.
 
 ### Step 6 — Output
 
-Fill in `templates/ac-matrix.md` in REFINEMENT mode and save to:
+Fill in `.claude/templates/ac-matrix.md` in REFINEMENT mode and save to:
 `[feature-slug]-ac-matrix.md` (in the working directory or as specified).
 
 Print a summary:
@@ -242,10 +240,10 @@ Ask: "Are you comfortable with the open gaps? Should any missing evidence block 
 ## Reference files
 
 Always read these before running:
-- `harness/guides/ac-templates/AC_GUIDE.md` — AC writing standards
-- `harness/guides/ac-templates/AC_REFINEMENT_MEETING.md` — meeting facilitation guide
-- `harness/guides/personas/README.md` — available personas and selection heuristic
-- `templates/ac-matrix.md` — output template
+- `.claude/guides/ac-templates/AC_GUIDE.md` — AC writing standards
+- `.claude/guides/ac-templates/AC_REFINEMENT_MEETING.md` — meeting facilitation guide
+- `.claude/guides/personas/README.md` — available personas and selection heuristic
+- `.claude/templates/ac-matrix.md` — output template
 
 ---
 

@@ -1,5 +1,4 @@
 ---
-mode: agent
 description: >
   Pillar D — Documentation Review.
   Evaluates whether documentation across all relevant sources (README, Academy,
@@ -7,13 +6,10 @@ description: >
   the user-visible changes of a feature.
   Requires human input (doc sources declaration) before evaluation can proceed.
   Produces a doc-review.md with a gap analysis and prioritised action list.
-tools:
-  - read_file
-  - list_files
-  - search_files
-  - run_command
-  - fetch_webpage
-applyTo: "**"
+name: qa-doc-review
+kind: skill
+pillar: feature-validation
+version: "1.0"
 ---
 
 # QA Harness — Pillar D: Documentation Review
@@ -42,7 +38,7 @@ If no form is found, **stop** and present the following prompt to the QA enginee
 ```
 Pillar D requires you to declare documentation sources before evaluation.
 
-Please fill in: harness/guides/doc-standards/DOC_SOURCES_TEMPLATE.md
+Please fill in: .claude/guides/doc-standards/DOC_SOURCES_TEMPLATE.md
 
 Copy it to: [feature-slug]-doc-sources.md and fill in all applicable sections.
 
@@ -77,7 +73,7 @@ These become your **search terms** for documentation scanning. Be specific:
 
 If a PR diff is available, also run the computational sensor:
 ```bash
-node harness/sensors/doc-reviewer/doc-reviewer.js \
+node src/harness/sensors/doc-reviewer/doc-reviewer.ts \
   --sources [feature-slug]-doc-sources.md \
   --feature [slug] \
   --diff [diff-file] \
@@ -92,7 +88,7 @@ Read the sensor output JSON file for structural findings.
 
 ## Step 2 — Determine required documentation types
 
-Read `harness/guides/doc-standards/DOC_STANDARDS.md`, specifically the
+Read `.claude/guides/doc-standards/DOC_STANDARDS.md`, specifically the
 "Required documentation by change type" table.
 
 Match the feature's change type to the table and identify which doc types are required.
@@ -239,7 +235,7 @@ Organise all gaps into three tiers:
 
 ## Step 6 — Output
 
-Fill in `templates/doc-review.md` and save to:
+Fill in `.claude/templates/doc-review.md` and save to:
 `<feature-slug>-doc-review.md`
 
 Print a summary:
@@ -280,9 +276,9 @@ For `MANUAL_REVIEW_REQUIRED` sources, ask:
 ## Reference files
 
 Always read before running:
-- `harness/guides/doc-standards/DOC_STANDARDS.md` — required docs by change type
-- `harness/guides/doc-standards/DOC_SOURCES_TEMPLATE.md` — the human input form
-- `templates/doc-review.md` — output template
+- `.claude/guides/doc-standards/DOC_STANDARDS.md` — required docs by change type
+- `.claude/guides/doc-standards/DOC_SOURCES_TEMPLATE.md` — the human input form
+- `.claude/templates/doc-review.md` — output template
 
 ---
 

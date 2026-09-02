@@ -1,15 +1,13 @@
 ---
-mode: agent
 description: >
   Stage 6 — QA Decision and Report Assembly.
   Assembles outputs from all four pillars (A: AC, B: Cypress, C: Persona UAT, D: Docs)
   into a final QA Harness Report and issues a release recommendation.
   Contains the final mandatory human checkpoint before the recommendation is acted upon.
-tools:
-  - read_file
-  - list_files
-  - search_files
-applyTo: "**"
+name: qa-report
+kind: skill
+pillar: feature-validation
+version: "1.0"
 ---
 
 # QA Harness — Stage 6: QA Decision
@@ -147,7 +145,7 @@ A QA engineer override must be noted in the report with their name and rationale
 
 ## Step 7 — Output
 
-Fill in `templates/qa-report.md` and save to:
+Fill in `.claude/templates/qa-report.md` and save to:
 `[feature-slug]-qa-report.md`
 
 Print the final verdict banner:
@@ -170,5 +168,5 @@ Print the final verdict banner:
 
 ## Reference files
 
-- `templates/qa-report.md` — output template
+- `.claude/templates/qa-report.md` — output template
 - All pillar templates for cross-reference

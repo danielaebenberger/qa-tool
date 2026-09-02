@@ -1,17 +1,14 @@
 ---
-mode: agent
 description: >
   Pillar C — Persona-based UAT.
   Selects relevant Jahia personas for a feature, generates concrete UAT scenarios
   for each persona, performs synthetic walkthroughs where Cypress evidence is absent,
   and produces a persona-ucat-pack.md for QA engineer review.
   Contains a mandatory human checkpoint before scenario execution.
-tools:
-  - read_file
-  - list_files
-  - search_files
-  - run_command
-applyTo: "**"
+name: qa-persona-uat
+kind: skill
+pillar: feature-validation
+version: "1.0"
 ---
 
 # QA Harness — Pillar C: Persona-based UAT
@@ -34,8 +31,8 @@ Gather all of the following before generating scenarios:
 1. **Feature context** — ticket, PRP plan, or PR description (what changed and why)
 2. **Pillar A output** — `*-ac-matrix.md` (finalised ACs and their persona tags)
 3. **Pillar B output** — `*-test-adequacy-review.md` (which scenarios are tested, which are not)
-4. **Persona definitions** — all `*.md` files in `harness/guides/personas/` (excluding TEMPLATE and README)
-5. **Scenario patterns** — `harness/guides/personas/SCENARIO_PATTERNS.md`
+4. **Persona definitions** — all `*.md` files in `.claude/guides/personas/` (excluding TEMPLATE and README)
+5. **Scenario patterns** — `.claude/guides/personas/SCENARIO_PATTERNS.md`
 6. **UX design** — from the plan's `## UX Design` section or screenshots, if available
 
 If Pillars A or B have not run yet, note this and proceed with what is available.
@@ -44,7 +41,7 @@ If Pillars A or B have not run yet, note this and proceed with what is available
 
 ## Step 1 — Persona selection
 
-Read `harness/guides/personas/README.md` for the selection heuristic.
+Read `.claude/guides/personas/README.md` for the selection heuristic.
 Then apply it to the feature:
 
 For each of the 5 Jahia personas, decide: **SELECT** or **EXCLUDE**.
@@ -67,7 +64,7 @@ Aim for 3–4 personas per feature. Selecting all 5 dilutes focus.
 
 For each selected persona, generate **2–4 scenarios**. Quality over quantity.
 
-Use `harness/guides/personas/SCENARIO_PATTERNS.md` as your source of patterns.
+Use `.claude/guides/personas/SCENARIO_PATTERNS.md` as your source of patterns.
 Match the feature type to the relevant patterns.
 If no pattern matches, construct a new scenario using the anatomy:
 
@@ -215,7 +212,7 @@ For every `SYNTHETIC-FAIL`, `PARTIAL`, or `FAIL` verdict:
 
 ## Step 6 — Output
 
-Fill in `templates/persona-ucat-pack.md` and save to:
+Fill in `.claude/templates/persona-ucat-pack.md` and save to:
 `<feature-slug>-persona-ucat-pack.md`
 
 Print a summary:
@@ -243,11 +240,11 @@ For every release-blocking failure, ask:
 ## Reference files
 
 Always read before running:
-- `harness/guides/personas/README.md` — selection heuristic
-- `harness/guides/personas/SCENARIO_PATTERNS.md` — reusable scenario patterns
-- `harness/guides/personas/[slug].md` — the active persona's full definition
-- `harness/guides/ac-templates/AC_GUIDE.md` — to understand persona tags on ACs
-- `templates/persona-ucat-pack.md` — output template
+- `.claude/guides/personas/README.md` — selection heuristic
+- `.claude/guides/personas/SCENARIO_PATTERNS.md` — reusable scenario patterns
+- `.claude/guides/personas/[slug].md` — the active persona's full definition
+- `.claude/guides/ac-templates/AC_GUIDE.md` — to understand persona tags on ACs
+- `.claude/templates/persona-ucat-pack.md` — output template
 
 ---
 

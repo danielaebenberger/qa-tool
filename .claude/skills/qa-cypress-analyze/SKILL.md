@@ -1,17 +1,15 @@
 ---
-mode: agent
 description: >
   Pillar B — Test Adequacy Review (Cypress-focused).
   Analyses the Cypress test suite in a Jahia repository for coverage adequacy.
   Goes beyond line/branch coverage to assess scenario, persona, multilingual,
   accessibility, and error-handling coverage.
   Produces a test-adequacy-review.md with findings and recommendations.
-tools:
-  - read_file
-  - list_files
-  - search_files
-  - run_command
-applyTo: "**"
+name: qa-cypress-analyze
+kind: skill
+pillar: feature-validation
+version: "1.0"
+see_also: [qa-coverage-map]
 ---
 
 # QA Harness — Pillar B: Test Adequacy Review
@@ -46,7 +44,7 @@ Evaluate the Cypress test suite against these coverage dimensions:
 Run the cypress-analyzer sensor first:
 
 ```bash
-node harness/sensors/cypress-analyzer/cypress-analyzer.js \
+node src/harness/sensors/cypress-analyzer/cypress-analyzer.ts \
   --tests-dir <target-repo>/tests/cypress/e2e \
   --feature <feature-slug> \
   --ac-matrix <feature-slug>-ac-matrix.md \
@@ -157,7 +155,7 @@ If no AC matrix is available, base the verdict on scenario coverage breadth:
 
 ## Step 8 — Output
 
-Fill in `templates/test-adequacy-review.md` and save to:
+Fill in `.claude/templates/test-adequacy-review.md` and save to:
 `<feature-slug>-test-adequacy-review.md`
 
 Print a summary:
@@ -182,9 +180,9 @@ or accept the risk with a note?"
 ## Reference files
 
 Always read before running:
-- `harness/guides/personas/README.md` — persona selection heuristic
-- `harness/guides/ac-templates/AC_GUIDE.md` — AC types and automation assignments
-- `templates/test-adequacy-review.md` — output template
+- `.claude/guides/personas/README.md` — persona selection heuristic
+- `.claude/guides/ac-templates/AC_GUIDE.md` — AC types and automation assignments
+- `.claude/templates/test-adequacy-review.md` — output template
 
 ---
 

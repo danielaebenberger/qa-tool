@@ -1,17 +1,14 @@
 ---
-mode: agent
 description: >
   Full QA Harness pipeline orchestrator.
   Runs all six stages of the QA validation workflow in sequence,
   enforcing human checkpoints, chaining pillar outputs, and producing
   a final QA report with a release recommendation.
   Use /qa-run for a full pipeline run, or pass --pillars to run a subset.
-tools:
-  - read_file
-  - list_files
-  - search_files
-  - run_command
-applyTo: "**"
+name: qa-run
+kind: skill
+pillar: feature-validation
+version: "1.0"
 ---
 
 # QA Harness — Orchestrator: /qa-run
@@ -107,7 +104,7 @@ Adjust based on feedback before proceeding.
 
 **VALIDATION mode** (post-delivery):
 - Load existing AC set from PR description, ticket, or previous REFINEMENT output
-- Run `harness/sensors/ac-validator/ac-validator.js` to inventory Cypress tests
+- Run `src/harness/sensors/ac-validator/ac-validator.ts` to inventory Cypress tests
 - Map each AC to evidence
 - Store output as `[slug]-ac-matrix.md`
 
@@ -124,7 +121,7 @@ Adjust based on feedback before proceeding.
 
 - Select relevant personas using the heuristic
 - Generate UAT scenarios for each selected persona
-- Use scenario patterns from `harness/guides/personas/SCENARIO_PATTERNS.md`
+- Use scenario patterns from `.claude/guides/personas/SCENARIO_PATTERNS.md`
 
 ⚠️ **MANDATORY HUMAN CHECKPOINT**
 
@@ -147,7 +144,7 @@ Run both sensors in parallel:
 
 **Pillar B — Cypress analysis**:
 ```bash
-node harness/sensors/cypress-analyzer/cypress-analyzer.js \
+node src/harness/sensors/cypress-analyzer/cypress-analyzer.ts \
   --tests-dir [target-repo]/tests/cypress/e2e \
   --feature [slug] \
   --ac-matrix [slug]-ac-matrix.md \
@@ -173,7 +170,7 @@ Store output as `[slug]-persona-ucat-pack.md`.
 
 **Check for doc sources form first**:
 - Look for `[slug]-doc-sources.md`
-- If missing: prompt the QA engineer to fill in `harness/guides/doc-standards/DOC_SOURCES_TEMPLATE.md`
+- If missing: prompt the QA engineer to fill in `.claude/guides/doc-standards/DOC_SOURCES_TEMPLATE.md`
 - If QA engineer has indicated `--skip-doc` or this is an internal-only change: skip Stage 5 and note in report
 
 **Invoke**: `qa-doc-review` skill
