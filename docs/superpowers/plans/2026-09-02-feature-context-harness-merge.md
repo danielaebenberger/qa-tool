@@ -430,7 +430,11 @@ git mv _incoming/feature-context-harness/.github/copilot/qa-doc-review.prompt.md
 git mv _incoming/feature-context-harness/.github/copilot/qa-persona-uat.prompt.md .claude/skills/qa-persona-uat/SKILL.md
 git mv _incoming/feature-context-harness/.github/copilot/qa-report.prompt.md .claude/skills/qa-report/SKILL.md
 git mv _incoming/feature-context-harness/.github/copilot/qa-run.prompt.md .claude/skills/qa-run/SKILL.md
+
+rmdir _incoming/feature-context-harness/.github/copilot 2>/dev/null || true
 ```
+
+*(The `.github/copilot/` directory is now empty — removed here rather than left dangling, since Task 15 later needs `_incoming/feature-context-harness/.github/` to contain only `workflows/qa-harness.yml` so its own cleanup can fully remove `.github/` once that file is gone.)*
 
 - [ ] **Step 2: Normalize frontmatter on all six** — these already carry `name`-equivalent info in their `description` prose (e.g. "Pillar A — Acceptance Criteria Validation") but use the Copilot `mode: agent` field, not the Decision 4 schema. Replace each frontmatter block, keeping the existing `description` text verbatim and adding the missing fields:
 
@@ -1774,7 +1778,7 @@ Edit `package.json`, in the `"scripts"` block, add:
 - [ ] **Step 6: Generate `docs/CAPABILITIES.md` for real and inspect it**
 
 Run: `pnpm capabilities:generate && cat docs/CAPABILITIES.md`
-Expected: five pillar sections, all 14 capabilities from Tasks 5–7 and 12 present (6 from Task 5, 2 from Task 6, 6 from Task 7, 3 from Task 12 — wait, `qa-capture` from Task 16 isn't written yet, so 14 total at this point; it appears once Task 16 lands and this script is rerun in Task 16's own steps).
+Expected: five pillar sections, all 17 capabilities from Tasks 5–7 and 12 present (6 from Task 5, 2 from Task 6, 6 from Task 7, 3 from Task 12 = 17). `qa-capture` from Task 16 isn't written yet, so the count is 17, not 18, at this point — it appears once Task 16 lands and this script is rerun in Task 16's own steps.
 
 - [ ] **Step 7: Commit**
 
@@ -1893,11 +1897,25 @@ jobs:
           path: target
           fetch-depth: 0
 
+      - name: Determine the ref the caller pinned
+        id: pin
+        run: |
+          # github.job_workflow_ref for a reusable-workflow job resolves to
+          # "owner/repo/.github/workflows/qa-harness-reusable.yml@<ref>"
+          # (e.g. "...@refs/tags/qa-harness-v1") — the ref after the last
+          # '@' is exactly what the calling repo pinned via `uses: ...@<ref>`.
+          # There is no simpler built-in context var for this; github.action_ref
+          # does not apply here (that's for composite/JS actions, not reusable
+          # workflow callers).
+          REF="${{ github.job_workflow_ref }}"
+          REF="${REF##*@}"
+          echo "ref=$REF" >> "$GITHUB_OUTPUT"
+
       - name: Checkout qa-tool sensors at this pinned ref
         uses: actions/checkout@v4
         with:
           repository: danielaebenberger/qa-tool
-          ref: ${{ github.action_ref }}
+          ref: ${{ steps.pin.outputs.ref }}
           path: qa-tool-sensors
           sparse-checkout: |
             src/harness/sensors
@@ -1968,7 +1986,7 @@ jobs:
           fi
 ```
 
-*(Note: `github.action_ref` resolves to the tag/ref the caller pinned when invoking `uses: danielaebenberger/qa-tool/.github/workflows/qa-harness-reusable.yml@qa-harness-v1` — this is what makes the sensor checkout version-locked to the same tag the caller opted into, per spec Decision 5.)*
+*(Note: `github.job_workflow_ref`, parsed in the "Determine the ref the caller pinned" step, resolves to the tag/ref the caller pinned when invoking `uses: danielaebenberger/qa-tool/.github/workflows/qa-harness-reusable.yml@qa-harness-v1` — this is what makes the sensor checkout version-locked to the same tag the caller opted into, per spec Decision 5.)*
 
 - [ ] **Step 2: Remove the old workflow file**
 
@@ -1998,7 +2016,7 @@ git commit -m "ci: convert qa-harness.yml into a version-pinnable reusable workf
 - Create: `CONTRIBUTING.md`
 
 **Interfaces:**
-- Produces: the fifteenth catalog entry (`kind: skill`, `pillar: harness-engineering`) — regenerating `docs/CAPABILITIES.md` after this task must show 15 entries total (14 from Task 13 + this one).
+- Produces: the eighteenth catalog entry (`kind: skill`, `pillar: harness-engineering`) — regenerating `docs/CAPABILITIES.md` after this task must show 18 entries total (17 from Task 13 + this one).
 
 - [ ] **Step 1: Write `.claude/skills/qa-capture/SKILL.md`**
 
@@ -2115,7 +2133,7 @@ CI-enforced frontmatter linting):
 - [ ] **Step 3: Regenerate the catalog now that `qa-capture` exists**
 
 Run: `pnpm capabilities:generate && grep -c '| \`qa-' docs/CAPABILITIES.md`
-Expected: 15.
+Expected: 18 (the 17 from Task 13 plus `qa-capture`).
 
 - [ ] **Step 4: Commit**
 
