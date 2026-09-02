@@ -36,9 +36,11 @@ git tag pre-merge main
 git push origin pre-merge
 
 cd /private/tmp/claude-502/-Users-debenberger/23619d5a-4155-489f-a846-bda87dc4bcb6/scratchpad/repos/feature-context-harness
-git tag pre-merge main
+git tag pre-merge feature/qa-harness-initial
 git push origin pre-merge
 ```
+
+(feature-context-harness's default/active branch is `feature/qa-harness-initial`, not `main` — it never had a `main` branch. Every later step in this plan that references feature-context-harness's branch uses `feature/qa-harness-initial`; `main` throughout this plan refers only to qa-tool's default branch.)
 
 - [ ] **Step 2: Verify tags exist on both remotes**
 
@@ -69,7 +71,7 @@ Expected: `On branch merge/feature-context-harness-design`, clean tree (the desi
 cd /private/tmp/claude-502/-Users-debenberger/23619d5a-4155-489f-a846-bda87dc4bcb6/scratchpad/repos/qa-tool
 git remote add fch-origin /private/tmp/claude-502/-Users-debenberger/23619d5a-4155-489f-a846-bda87dc4bcb6/scratchpad/repos/feature-context-harness
 git fetch fch-origin
-git subtree add --prefix=_incoming/feature-context-harness fch-origin main -m "chore: pull in feature-context-harness history via subtree"
+git subtree add --prefix=_incoming/feature-context-harness fch-origin feature/qa-harness-initial -m "chore: pull in feature-context-harness history via subtree"
 ```
 
 - [ ] **Step 2: Verify the staged content landed under `_incoming/`**
@@ -2296,7 +2298,7 @@ git push origin qa-harness-v1
 
 ```bash
 cd /private/tmp/claude-502/-Users-debenberger/23619d5a-4155-489f-a846-bda87dc4bcb6/scratchpad/repos/feature-context-harness
-git checkout main
+git checkout feature/qa-harness-initial
 ```
 
 Edit `README.md`'s first line to:
