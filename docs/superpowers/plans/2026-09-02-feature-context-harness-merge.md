@@ -2196,19 +2196,19 @@ git commit -m "docs: update README for the merged five-group capability structur
 ## Task 18: Clean up remaining obsolete paths
 
 **Files:**
-- Delete: `_incoming/feature-context-harness/README.md`, `_incoming/feature-context-harness/LICENSE`, `_incoming/` (now empty)
+- Delete: `_incoming/feature-context-harness/README.md`, `_incoming/feature-context-harness/LICENSE`, `_incoming/feature-context-harness/AGENTS.md`, `_incoming/` (now empty)
 
 **Interfaces:** N/A
 
-- [ ] **Step 1: Confirm `_incoming/feature-context-harness` only has the two leftover top-level files**
+- [ ] **Step 1: Confirm `_incoming/feature-context-harness` only has the three leftover top-level files**
 
 Run: `find _incoming -type f`
-Expected: exactly `_incoming/feature-context-harness/README.md` and `_incoming/feature-context-harness/LICENSE` (every other file was moved or deleted in Tasks 3–15).
+Expected: `_incoming/feature-context-harness/README.md`, `_incoming/feature-context-harness/LICENSE`, and `_incoming/feature-context-harness/AGENTS.md` (every other file was moved or deleted in Tasks 3–15; `AGENTS.md` was missed by Task 3's original scope — Task 3 deleted qa-tool's own root `AGENTS.md` and merged both repos' `AGENTS.md` content into `CLAUDE.md`, but never removed feature-context-harness's staged copy here — it is now fully redundant with `CLAUDE.md` and safe to remove alongside the other two).
 
-- [ ] **Step 2: Remove them** — their content isn't lost; it's preserved in feature-context-harness's own repo history and in this branch's earlier subtree-add commit (Task 2), and feature-context-harness itself gets archived, not deleted, in Task 20.
+- [ ] **Step 2: Remove all three** — their content isn't lost; it's preserved in feature-context-harness's own repo history and in this branch's earlier subtree-add commit (Task 2), `AGENTS.md`'s content specifically is already merged into `CLAUDE.md` (Task 3), and feature-context-harness itself gets archived, not deleted, in Task 20.
 
 ```bash
-git rm _incoming/feature-context-harness/README.md _incoming/feature-context-harness/LICENSE
+git rm _incoming/feature-context-harness/README.md _incoming/feature-context-harness/LICENSE _incoming/feature-context-harness/AGENTS.md
 rmdir _incoming/feature-context-harness _incoming 2>/dev/null || true
 ```
 
