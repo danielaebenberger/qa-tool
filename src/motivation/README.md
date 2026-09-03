@@ -1,5 +1,5 @@
 # motivation
 
-Team motivation features. See [qa-domain.instructions.md](../../../.github/instructions/qa-domain.instructions.md) §Pillar 4.
+Team motivation features. See [jahia-qa-domain.md](../../.claude/guides/jahia-qa-domain.md) §Pillar 4.
 
 Constraint: reward outcomes (stability, bugs caught), never rank engineers against each other.

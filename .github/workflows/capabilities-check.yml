@@ -1,0 +1,32 @@
+# .github/workflows/capabilities-check.yml
+name: Capabilities catalog check
+
+on:
+  pull_request:
+    paths:
+      - '.claude/skills/**'
+      - '.claude/agents/**'
+      - 'src/harness/sensors/**'
+      - 'scripts/generate-capabilities.ts'
+      - 'docs/CAPABILITIES.md'
+
+jobs:
+  check:
+    name: docs/CAPABILITIES.md is up to date
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm capabilities:generate
+      - name: Fail if CAPABILITIES.md is stale
+        run: |
+          if ! git diff --quiet -- docs/CAPABILITIES.md; then
+            echo "::error::docs/CAPABILITIES.md is out of date. Run 'pnpm capabilities:generate' and commit the result."
+            git diff -- docs/CAPABILITIES.md
+            exit 1
+          fi

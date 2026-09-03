@@ -1,61 +1,58 @@
 # qa-tool
 
-TypeScript-based QA assistant for the Jahia DXP suite, organized around four
-pillars: a CI test-results dashboard, per-repo test coverage maps, test-case
-identification for tickets, and team motivation mechanics. See
-[`.github/instructions/qa-domain.instructions.md`](.github/instructions/qa-domain.instructions.md)
+TypeScript-based QA assistant for the Jahia DXP suite, organized around five
+groups: four product pillars (a CI test-results dashboard, feature
+validation, test-case identification for tickets, and team motivation
+mechanics) plus a harness-engineering group for meta-tooling. See
+[`.claude/guides/jahia-qa-domain.md`](.claude/guides/jahia-qa-domain.md)
 for the full domain context behind all of it.
 
-**New here?** Read "The four pillars" below first — it tells you what's a
-running app you open in a browser versus what's an AI-assistant prompt/skill
+As of 2026-09, this repo also absorbs what was `feature-context-harness` —
+its persona-based UAT, doc-review, and Cypress-adequacy sensor now live here
+as the Feature Validation pillar.
+
+**New here?** Read "The five groups" below first — it tells you what's a
+running app you open in a browser versus what's an AI-assistant skill/agent
 you invoke, so you don't go looking for a dashboard widget that doesn't exist
-yet, or miss a ready-to-use prompt because it isn't in the UI.
+yet, or miss a ready-to-use skill because it isn't in the UI.
 
-## The four pillars — what's built, what you invoke
+## The five groups — what's built, what you invoke
 
-| # | Pillar | What it's for | Status today | How you use it |
+| # | Group | What it's for | Status today | How you use it |
 |---|---|---|---|---|
-| 1 | **CI test results dashboard** | Pass rate, flaky/new/always-failing/stable classification — "what should I look at today" | **Running app**, backed by TestRail | Open the dashboard (`pnpm dev`, see below). To add a new metric/widget, invoke the **`qa-dashboard-widget`** skill |
-| 2 | **Test coverage analysis** | A per-repo coverage *map* (what's tested and how, not a single score) | **Prompt only** — no app UI yet | Run the **`/coverage-map`** prompt, pointed at the target Jahia repo |
-| 3 | **Test-case identification** | Draft/challenge test cases for a ticket; ask clarifying questions; flag missing requirements; review an already-open test PR | **Prompt + skill + agent** — no app UI yet | **`/tldr`** to triage a ticket/PR before deciding it's worth the fuller pass; **`/bug-brief`** to rewrite a verbose bug ticket into a fixed, priority/severity-ready structure; **`/define-testcases`** for a single ticket; the **`test-case-design`** skill for an epic or a regression-prone area; the **`pr-test-reviewer`** agent for reviewing an already-open test PR |
-| 4 | **Team motivation** | Sincere, non-gamified recognition of stability wins | **Stub only**, waiting on real usage of 1–3 first | Nothing to invoke yet — see `src/motivation/README.md` |
+| 1 | **CI Insight** | Pass rate, flaky/new/always-failing/stable classification — "what should I look at today" | **Running app**, backed by TestRail | Open the dashboard (`pnpm dev`, see below). To add a new metric/widget, invoke the **`qa-dashboard-widget`** skill |
+| 2 | **Feature Validation** | Six-stage pipeline (`qa-run` → `qa-ac-validate` → `qa-cypress-analyze` → `qa-persona-uat` → `qa-doc-review` → `qa-report`) plus `qa-coverage-map`. Validates that a delivered feature satisfies acceptance criteria, has adequate Cypress coverage, passes persona-based UAT, and has current docs | **Skill pipeline + computational sensors** — no app UI yet | Run **`qa-run`** for the full pipeline (or pass `--pillars` for a subset), or invoke a single stage skill directly, e.g. **`qa-coverage-map`** pointed at the target Jahia repo |
+| 3 | **Test-Case Identification** | Draft/challenge test cases for a ticket; ask clarifying questions; flag missing requirements | **Skills** — no app UI yet | **`qa-tldr`** to triage a ticket/PR before deciding it's worth the fuller pass; **`qa-bug-brief`** to rewrite a verbose bug ticket into a fixed, priority/severity-ready structure; **`qa-define-testcases`** for a single ticket; **`qa-test-case-design`** for an epic or a regression-prone area |
+| 4 | **Team Motivation** | Sincere, non-gamified recognition of stability wins | **Stub only**, waiting on real usage of 1–3 first | Nothing to invoke yet — see `src/motivation/README.md` |
+| 5 | **Harness Engineering** | Meta-tools that work on the harness itself | **Skills + agents** | **`qa-dashboard-widget`** when adding a dashboard metric; **`qa-self-reviewer`** and **`qa-pr-test-reviewer`** agents for reviewing changes; **`qa-capture`** to route a freshly-learned lesson into the harness |
 
-Pillars 2 and 3 don't have a dashboard page: their output is a markdown
+Groups 2 and 3 don't have a dashboard page: their output is a markdown
 document you review and paste into a ticket or wiki, produced by asking your
-AI assistant to run the prompt/skill. That's intentional — see "Output is
+AI assistant to run the skill. That's intentional — see "Output is
 editable artefacts" in the domain instructions.
 
-## Skills, prompts, and agents — quick reference
+## Skills, agents, and sensors — quick reference
 
-| Name | Type | Use it when | What you get |
-|---|---|---|---|
-| [`tldr`](.github/prompts/tldr.prompt.md) | prompt | You've just been handed a verbose ticket, PR, or AI-generated description and need to get oriented in under a minute, before deciding whether it earns a `/define-testcases` pass | A short, adaptive digest — what it is, the real user impact, whether it's a genuine defect or a workaround for unsupported use, and a concrete example pulled out if the source has one |
-| [`bug-brief`](.github/prompts/bug-brief.prompt.md) | prompt | You have an existing bug ticket that's verbose or unclear and need it rewritten so QA/PO can set priority and severity from it alone | The same ticket in a fixed structure (Environment, Steps to reproduce, Current behaviour, Desired behaviour), leading with real-world impact and an explicit confirmed-vs-not-proven call on any causal claim; repro commands/code kept verbatim; extra detail moved to a trailing "More AI description" |
-| [`define-testcases`](.github/prompts/define-testcases.prompt.md) | prompt | Refining a story, or in the test phase of a ticket | Coverage audit → clarifying questions → risk view → test-case table (Cypress-first) → coverage check → missing requirements |
-| [`coverage-map`](.github/prompts/coverage-map.prompt.md) | prompt | You need an honest picture of what's tested in a Jahia repo before planning work there | A markdown table of functional areas × test kinds present × risk, with gap call-outs and next-step proposals |
-| [`test-case-design`](.github/skills/test-case-design/SKILL.md) | skill | The ticket is too big for one prompt pass — an epic, a release candidate, a known regression-prone module | A fuller artefact: risk register → coverage discovery → test cases → trace matrix → coverage gaps → open questions |
-| [`qa-dashboard-widget`](.github/skills/qa-dashboard-widget/SKILL.md) | skill | You're adding a new metric/widget to the dashboard pillar (dev task, not a QA-analysis task) | A widget wired through a typed data contract, with loading/empty/error/stale/healthy states and tests |
-| [`bootstrap-qa-tool`](.github/prompts/bootstrap-qa-tool.prompt.md) | prompt | Reference only — records the original scaffold decisions | Not something you run day-to-day |
-| [`qa-reviewer`](.github/agents/qa-reviewer.agent.md) | agent | Reviewing a PR or staged changes to qa-tool itself | A read-only structured review against the four pillars and the hard constraints in `AGENTS.md` |
-| [`pr-test-reviewer`](.github/agents/pr-test-reviewer.agent.md) | agent | Reviewing an open PR that adds/changes tests (Cypress/e2e, Selenium, unit) in any Jahia repo | A read-only structured review: coverage fit, convention fit, cross-repo idiom check, scope, and prior-feedback tracking on re-review |
+See the full, generated list in
+[`docs/CAPABILITIES.md`](docs/CAPABILITIES.md) — regenerate it after any
+change with `pnpm capabilities:generate`.
 
-All of the above load
-[`qa-domain.instructions.md`](.github/instructions/qa-domain.instructions.md)
+Several skills in that catalog load
+[`jahia-qa-domain.md`](.claude/guides/jahia-qa-domain.md)
 first — that's where the Jahia-specific ground rules live (honesty over
 completeness, no test-case chains that depend on each other, Cypress/e2e as
 the default QA-owned artefact, etc.). You don't need to load it yourself;
-just be aware it's shaping every answer.
+just be aware it's shaping the answer for the skills that reference it.
 
 ### How to actually invoke one
 
-- **GitHub Copilot Chat** (VS Code): type the prompt as a slash command,
-  e.g. `/define-testcases`, or ask for a skill/agent by name, e.g. "use the
-  test-case-design skill for the multi-site epic."
-- **Claude Code / other agents**: ask directly — "run coverage-map on
-  `Jahia/<repo>`" or "use define-testcases for ticket #1234" — the agent
-  resolves the name to the file above.
+- **Claude Code**: ask directly — "run `qa-coverage-map` on `Jahia/<repo>`"
+  or "use `qa-define-testcases` for ticket #1234" — the agent resolves the
+  name to the skill/agent file catalogued in `docs/CAPABILITIES.md`.
+- **GitHub Copilot Chat** (VS Code): ask for a skill/agent by name, e.g.
+  "use the `qa-test-case-design` skill for the multi-site epic."
 - Either way: **give it the ticket link, PR link, or target repo up front.**
-  These prompts ask for missing inputs, but starting with a link instead of
+  These skills ask for missing inputs, but starting with a link instead of
   a paraphrase gets you a more grounded result.
 
 ## Prerequisites
@@ -170,6 +167,46 @@ pnpm e2e:smoke     # @smoke-tagged tests only
 ```
 
 Playwright reports are written to `playwright-report/` after each run.
+
+## Adopting the reusable QA harness workflow in another repo
+
+`.github/workflows/qa-harness-reusable.yml` is a `workflow_call` reusable
+workflow: it runs the AC-validator and Cypress-analyzer sensors against the
+*calling* repo's Cypress suite, posts/refreshes a PR comment with the result,
+and can fail the job if `.only` is detected. Other Jahia repos adopt it by
+adding a caller workflow like:
+
+```yaml
+permissions:
+  contents: read          # required — the reusable workflow checks out this repo
+  pull-requests: write    # required — see note below
+
+jobs:
+  qa-harness:
+    uses: danielaebenberger/qa-tool/.github/workflows/qa-harness-reusable.yml@qa-harness-v1
+    with:
+      cypress-path: tests/cypress/e2e
+    # secrets:
+    #   sensor-checkout-token: ${{ secrets.QA_TOOL_CHECKOUT_TOKEN }}
+    #   # ^ only needed if qa-tool is private and this caller repo doesn't
+    #   # already have default cross-repo access; falls back to the caller's
+    #   # own GITHUB_TOKEN otherwise.
+```
+
+A few things worth knowing before you copy this:
+
+- **Pin to a tag (e.g. `@qa-harness-v1`), never `@main`.** This workflow is
+  an interface other repos' CI depends on — a breaking change landing on
+  `qa-tool`'s `main` must not silently break someone else's pipeline.
+- **The caller workflow needs its own `permissions: contents: read` and
+  `pull-requests: write`.** A reusable workflow's `permissions:` block can
+  only narrow the token it's given, never widen it — so if the caller
+  doesn't grant `contents: read`, the reusable workflow's own first step
+  (checking out the caller's repo) fails; if it doesn't grant
+  `pull-requests: write`, the PR-comment step fails — even though
+  `qa-harness-reusable.yml` declares both permissions internally.
+- **`enable-doc-review` is currently a no-op.** It's reserved for a future
+  doc-reviewer CI step; setting it to `true` today has no effect.
 
 ## Port summary
 

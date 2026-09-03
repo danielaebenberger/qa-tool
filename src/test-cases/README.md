@@ -1,3 +1,3 @@
 # test-cases
 
-Test-case identification assistant. See [qa-domain.instructions.md](../../../.github/instructions/qa-domain.instructions.md) §Pillar 3.
+Test-case identification assistant. See [jahia-qa-domain.md](../../.claude/guides/jahia-qa-domain.md) §Pillar 3.
