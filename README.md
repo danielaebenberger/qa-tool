@@ -178,7 +178,8 @@ adding a caller workflow like:
 
 ```yaml
 permissions:
-  pull-requests: write   # required — see note below
+  contents: read          # required — the reusable workflow checks out this repo
+  pull-requests: write    # required — see note below
 
 jobs:
   qa-harness:
@@ -197,11 +198,13 @@ A few things worth knowing before you copy this:
 - **Pin to a tag (e.g. `@qa-harness-v1`), never `@main`.** This workflow is
   an interface other repos' CI depends on — a breaking change landing on
   `qa-tool`'s `main` must not silently break someone else's pipeline.
-- **The caller workflow needs its own `permissions: pull-requests: write`.**
-  A reusable workflow's `permissions:` block can only narrow the token it's
-  given, never widen it — so if the caller doesn't grant `pull-requests:
-  write` itself, the PR-comment step in `qa-harness-reusable.yml` will fail
-  even though the reusable workflow declares that permission internally.
+- **The caller workflow needs its own `permissions: contents: read` and
+  `pull-requests: write`.** A reusable workflow's `permissions:` block can
+  only narrow the token it's given, never widen it — so if the caller
+  doesn't grant `contents: read`, the reusable workflow's own first step
+  (checking out the caller's repo) fails; if it doesn't grant
+  `pull-requests: write`, the PR-comment step fails — even though
+  `qa-harness-reusable.yml` declares both permissions internally.
 - **`enable-doc-review` is currently a no-op.** It's reserved for a future
   doc-reviewer CI step; setting it to `true` today has no effect.
 
