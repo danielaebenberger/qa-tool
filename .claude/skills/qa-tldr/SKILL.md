@@ -27,7 +27,7 @@ workflow — this is what tells you that.
 
 ## What to do
 
-Load [.github/instructions/qa-domain.instructions.md](../instructions/qa-domain.instructions.md).
+Load [.claude/guides/jahia-qa-domain.md](../../guides/jahia-qa-domain.md).
 
 Don't use a fixed template — pick whatever 3-5 short headers actually fit
 *this* item. A bug ticket, a PR, and a design doc all deserve different

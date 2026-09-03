@@ -49,7 +49,6 @@ This is deliberately lightweight for a team under 10 contributors. If either
 of these happens, it's time to revisit (add ADRs, per-tool contract docs,
 CI-enforced frontmatter linting):
 
-- The catalog passes **15 skills/agents/sensors** (currently at the count
-  from `docs/CAPABILITIES.md`'s total after this task).
+- The catalog passes **15 skills/agents/sensors** (currently 18).
 - `scripts/generate-capabilities.ts` itself needs a stable interface because
   something external starts depending on `CAPABILITIES.md`'s exact shape.

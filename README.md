@@ -4,7 +4,7 @@ TypeScript-based QA assistant for the Jahia DXP suite, organized around five
 groups: four product pillars (a CI test-results dashboard, feature
 validation, test-case identification for tickets, and team motivation
 mechanics) plus a harness-engineering group for meta-tooling. See
-[`.github/instructions/qa-domain.instructions.md`](.github/instructions/qa-domain.instructions.md)
+[`.claude/guides/jahia-qa-domain.md`](.claude/guides/jahia-qa-domain.md)
 for the full domain context behind all of it.
 
 As of 2026-09, this repo also absorbs what was `feature-context-harness` —
@@ -37,12 +37,12 @@ See the full, generated list in
 [`docs/CAPABILITIES.md`](docs/CAPABILITIES.md) — regenerate it after any
 change with `pnpm capabilities:generate`.
 
-Every skill in that catalog loads
-[`qa-domain.instructions.md`](.github/instructions/qa-domain.instructions.md)
+Several skills in that catalog load
+[`jahia-qa-domain.md`](.claude/guides/jahia-qa-domain.md)
 first — that's where the Jahia-specific ground rules live (honesty over
 completeness, no test-case chains that depend on each other, Cypress/e2e as
 the default QA-owned artefact, etc.). You don't need to load it yourself;
-just be aware it's shaping every answer.
+just be aware it's shaping the answer for the skills that reference it.
 
 ### How to actually invoke one
 
@@ -167,6 +167,43 @@ pnpm e2e:smoke     # @smoke-tagged tests only
 ```
 
 Playwright reports are written to `playwright-report/` after each run.
+
+## Adopting the reusable QA harness workflow in another repo
+
+`.github/workflows/qa-harness-reusable.yml` is a `workflow_call` reusable
+workflow: it runs the AC-validator and Cypress-analyzer sensors against the
+*calling* repo's Cypress suite, posts/refreshes a PR comment with the result,
+and can fail the job if `.only` is detected. Other Jahia repos adopt it by
+adding a caller workflow like:
+
+```yaml
+permissions:
+  pull-requests: write   # required — see note below
+
+jobs:
+  qa-harness:
+    uses: danielaebenberger/qa-tool/.github/workflows/qa-harness-reusable.yml@qa-harness-v1
+    with:
+      cypress-path: tests/cypress/e2e
+    # secrets:
+    #   sensor-checkout-token: ${{ secrets.QA_TOOL_CHECKOUT_TOKEN }}
+    #   # ^ only needed if qa-tool is private and this caller repo doesn't
+    #   # already have default cross-repo access; falls back to the caller's
+    #   # own GITHUB_TOKEN otherwise.
+```
+
+A few things worth knowing before you copy this:
+
+- **Pin to a tag (e.g. `@qa-harness-v1`), never `@main`.** This workflow is
+  an interface other repos' CI depends on — a breaking change landing on
+  `qa-tool`'s `main` must not silently break someone else's pipeline.
+- **The caller workflow needs its own `permissions: pull-requests: write`.**
+  A reusable workflow's `permissions:` block can only narrow the token it's
+  given, never widen it — so if the caller doesn't grant `pull-requests:
+  write` itself, the PR-comment step in `qa-harness-reusable.yml` will fail
+  even though the reusable workflow declares that permission internally.
+- **`enable-doc-review` is currently a no-op.** It's reserved for a future
+  doc-reviewer CI step; setting it to `true` today has no effect.
 
 ## Port summary
 

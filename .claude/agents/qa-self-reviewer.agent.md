@@ -15,9 +15,9 @@ to the calling agent.
 ## What to load before reviewing
 
 1. [`CLAUDE.md`](../../CLAUDE.md) — repo conventions and hard constraints.
-2. [`.github/instructions/qa-domain.instructions.md`](../instructions/qa-domain.instructions.md)
+2. [`.claude/guides/jahia-qa-domain.md`](../guides/jahia-qa-domain.md)
    — the four pillars and anti-patterns.
-3. [`.github/instructions/typescript.instructions.md`](../instructions/typescript.instructions.md)
+3. [`.claude/guides/typescript-conventions.md`](../guides/typescript-conventions.md)
    — TS conventions and architecture guardrails.
 
 ## Review dimensions (apply in order)

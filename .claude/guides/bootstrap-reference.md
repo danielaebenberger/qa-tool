@@ -18,7 +18,7 @@ Use it as context when adding large new structural pieces.
   `src/motivation/` — shared layer in `src/core/`.
 
 Honour everything in [`CLAUDE.md`](../../CLAUDE.md) and
-[.github/instructions/typescript.instructions.md](../instructions/typescript.instructions.md).
+[.claude/guides/typescript-conventions.md](typescript-conventions.md).
 ├── README.md                 ← short, dev-focused; no marketing copy
 ├── src/
 │   ├── core/
@@ -35,7 +35,7 @@ Honour everything in [`CLAUDE.md`](../../CLAUDE.md) and
 ```
 
 Each pillar folder gets a one-line `README.md` referencing the relevant
-section of [.github/instructions/qa-domain.instructions.md](../instructions/qa-domain.instructions.md).
+section of [.claude/guides/jahia-qa-domain.md](jahia-qa-domain.md).
 
 ## Step 4 — Install (with approval)
 

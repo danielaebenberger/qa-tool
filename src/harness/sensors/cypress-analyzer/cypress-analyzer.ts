@@ -244,13 +244,19 @@ function runCli(): void {
     const i = args.indexOf(flag);
     return i !== -1 ? (args[i + 1] ?? def) : def;
   };
+  const hasFlag = (flag: string): boolean => args.includes(flag);
 
   const testsDir = getArg('--tests-dir', './tests/cypress/e2e') as string;
   const acMatrix = getArg('--ac-matrix', null);
   const feature = getArg('--feature', null);
   const outputFile = getArg('--output', 'cypress-adequacy-report.json') as string;
+  const verbose = hasFlag('--verbose');
 
   const report = buildAdequacyReport(testsDir, feature, acMatrix);
+  if (verbose) {
+    console.log(`[cypress-analyzer] Analyzed ${report.summary.totalFiles} file(s), ${report.summary.totalTests} test(s).`);
+    console.log(`[cypress-analyzer] Smells — HIGH: ${report.summary.smellCount.HIGH}, MEDIUM: ${report.summary.smellCount.MEDIUM}, LOW: ${report.summary.smellCount.LOW}`);
+  }
   writeFileSync(outputFile, JSON.stringify(report, null, 2));
   console.log(`[cypress-analyzer] Done. Overall grade: ${report.summary.overallGrade}`);
   process.exit(report.summary.coverageSignals.hasOnlyTests ? 1 : 0);

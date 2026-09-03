@@ -73,7 +73,7 @@ These become your **search terms** for documentation scanning. Be specific:
 
 If a PR diff is available, also run the computational sensor:
 ```bash
-node src/harness/sensors/doc-reviewer/doc-reviewer.ts \
+pnpm tsx src/harness/sensors/doc-reviewer/doc-reviewer.ts \
   --sources [feature-slug]-doc-sources.md \
   --feature [slug] \
   --diff [diff-file] \

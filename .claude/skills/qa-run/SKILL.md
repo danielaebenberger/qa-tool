@@ -144,7 +144,7 @@ Run both sensors in parallel:
 
 **Pillar B — Cypress analysis**:
 ```bash
-node src/harness/sensors/cypress-analyzer/cypress-analyzer.ts \
+pnpm tsx src/harness/sensors/cypress-analyzer/cypress-analyzer.ts \
   --tests-dir [target-repo]/tests/cypress/e2e \
   --feature [slug] \
   --ac-matrix [slug]-ac-matrix.md \
@@ -174,7 +174,7 @@ Store output as `[slug]-persona-ucat-pack.md`.
 - If QA engineer has indicated `--skip-doc` or this is an internal-only change: skip Stage 5 and note in report
 
 **Invoke**: `qa-doc-review` skill
-- Run sensor: `doc-reviewer.js --sources [slug]-doc-sources.md --feature [slug] --diff [diff]`
+- Run sensor: `doc-reviewer.ts --sources [slug]-doc-sources.md --feature [slug] --diff [diff]`
 - Evaluate each source
 - Draft CHANGELOG entry if missing
 - Identify blocking gaps

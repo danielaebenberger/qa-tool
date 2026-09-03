@@ -18,7 +18,7 @@ Inputs the user should provide (ask if missing):
 
 ## What to do
 
-Load [.github/instructions/qa-domain.instructions.md](../instructions/qa-domain.instructions.md)
+Load [.claude/guides/jahia-qa-domain.md](../../guides/jahia-qa-domain.md)
 first.
 
 Then produce, in this order:

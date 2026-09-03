@@ -12,8 +12,8 @@ A dashboard widget is the unit of value for the dashboard pillar. This
 skill keeps widgets honest: every one ships with a typed data contract,
 clear loading / empty / error states, and tests.
 
-Prereq: the repo is bootstrapped (it is). Load [.github/instructions/typescript.instructions.md](../../instructions/typescript.instructions.md)
-and [.github/instructions/qa-domain.instructions.md](../../instructions/qa-domain.instructions.md).
+Prereq: the repo is bootstrapped (it is). Load [.claude/guides/typescript-conventions.md](../../guides/typescript-conventions.md)
+and [.claude/guides/jahia-qa-domain.md](../../guides/jahia-qa-domain.md).
 
 ## Steps
 

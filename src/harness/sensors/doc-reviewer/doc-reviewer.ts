@@ -12,24 +12,28 @@ import { resolve } from 'node:path';
 import { get as httpsGet } from 'node:https';
 import { fileURLToPath } from 'node:url';
 
-export function extractTermsFromDiff(diffPath: string | null): string[] {
-  if (!diffPath || !existsSync(diffPath)) return [];
-  const diff = readFileSync(diffPath, 'utf8');
+export function extractTermsFromDiff(diffPath: string | null, featureSlug?: string): string[] {
   const terms = new Set<string>();
-  const added = diff.split('\n').filter((l) => l.startsWith('+') && !l.startsWith('+++'));
 
-  const i18nRe = /"([a-zA-Z][a-zA-Z0-9_.]+)":\s*"([^"]+)"/g;
-  for (const line of added) {
-    for (const m of line.matchAll(i18nRe)) {
-      const value = m[2] as string;
-      if (value.length > 2 && value.length < 60) terms.add(value);
+  if (diffPath && existsSync(diffPath)) {
+    const diff = readFileSync(diffPath, 'utf8');
+    const added = diff.split('\n').filter((l) => l.startsWith('+') && !l.startsWith('+++'));
+
+    const i18nRe = /"([a-zA-Z][a-zA-Z0-9_.]+)":\s*"([^"]+)"/g;
+    for (const line of added) {
+      for (const m of line.matchAll(i18nRe)) {
+        const value = m[2] as string;
+        if (value.length > 2 && value.length < 60) terms.add(value);
+      }
     }
-  }
-  const selRe = /data-sel-role=["']([^"']+)["']/g;
-  for (const line of added) for (const m of line.matchAll(selRe)) terms.add(m[1] as string);
+    const selRe = /data-sel-role=["']([^"']+)["']/g;
+    for (const line of added) for (const m of line.matchAll(selRe)) terms.add(m[1] as string);
 
-  const btnRe = /buttonLabel[^"']*['"]([^"']+)['"]/g;
-  for (const line of added) for (const m of line.matchAll(btnRe)) terms.add(m[1] as string);
+    const btnRe = /buttonLabel[^"']*['"]([^"']+)['"]/g;
+    for (const line of added) for (const m of line.matchAll(btnRe)) terms.add(m[1] as string);
+  }
+
+  if (featureSlug) terms.add(featureSlug);
 
   return [...terms].filter((t) => t.length > 2);
 }
@@ -153,7 +157,7 @@ async function runCli(): Promise<void> {
   const outputFile = getArg('--output', 'doc-review-raw.json') as string;
   const verbose = hasFlag('--verbose');
 
-  const terms = extractTermsFromDiff(diffFile);
+  const terms = extractTermsFromDiff(diffFile, featureSlug);
   const parsed = parseSourcesForm(sourcesFile);
   const results: { meta: unknown; sources: Array<Record<string, unknown>>; summary?: Record<string, unknown> } = {
     meta: { generatedAt: new Date().toISOString(), featureSlug, terms },

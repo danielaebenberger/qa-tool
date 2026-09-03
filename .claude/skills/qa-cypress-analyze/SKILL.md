@@ -44,7 +44,7 @@ Evaluate the Cypress test suite against these coverage dimensions:
 Run the cypress-analyzer sensor first:
 
 ```bash
-node src/harness/sensors/cypress-analyzer/cypress-analyzer.ts \
+pnpm tsx src/harness/sensors/cypress-analyzer/cypress-analyzer.ts \
   --tests-dir <target-repo>/tests/cypress/e2e \
   --feature <feature-slug> \
   --ac-matrix <feature-slug>-ac-matrix.md \

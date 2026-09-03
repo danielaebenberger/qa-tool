@@ -30,6 +30,10 @@ describe('extractTermsFromDiff', () => {
   it('returns an empty array when no diff path is given', () => {
     expect(extractTermsFromDiff(null)).toEqual([]);
   });
+
+  it('adds the feature slug as a term even with no diff', () => {
+    expect(extractTermsFromDiff(null, 'my-feature')).toEqual(['my-feature']);
+  });
 });
 
 describe('scanLocalFile', () => {

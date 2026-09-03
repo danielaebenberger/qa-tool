@@ -50,7 +50,7 @@ below is built around that split:
 
 ## What to do
 
-Load [.github/instructions/qa-domain.instructions.md](../instructions/qa-domain.instructions.md).
+Load [.claude/guides/jahia-qa-domain.md](../../guides/jahia-qa-domain.md).
 
 Rewrite the source into **exactly these four sections, in this order,
 using these headers verbatim**:

@@ -23,7 +23,7 @@ guessing which PR is meant.
 
 ## What to load before reviewing
 
-1. [`.github/instructions/qa-domain.instructions.md`](../instructions/qa-domain.instructions.md)
+1. [`.claude/guides/jahia-qa-domain.md`](../guides/jahia-qa-domain.md)
    — coverage-audit rule, no-duplicate-shared-component rule, group-by-
    feature rule, no-test-chaining rule, write-up-length-matches-change-size
    rule. Apply all of these to code that already exists, not to cases not
