@@ -8,7 +8,8 @@ description: >
 name: qa-run
 kind: skill
 pillar: feature-validation
-version: "1.0"
+version: "1.1"
+see_also: [qa-review]
 ---
 
 # QA Harness — Orchestrator: /qa-run
@@ -22,6 +23,10 @@ and produce a final release recommendation.
 > You do not replace the QA engineer. You extend them.
 > Your job is to do the mechanical, analytical, and inferential work so the QA engineer
 > can focus on the decisions that require product knowledge and human judgment.
+
+If you arrived here from a bare "qa-review this" ask rather than an explicit
+`/qa-run` invocation, use `qa-review` first — it asks the QA engineer which
+weight of review they actually want instead of assuming the full pipeline.
 
 ---
 
