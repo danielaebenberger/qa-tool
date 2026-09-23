@@ -22,7 +22,7 @@
 
 | Name | Kind | Description | Version | See also |
 |---|---|---|---|---|
-| `qa-bug-brief` | skill | Rewrite a verbose bug ticket — or draft a new one from a raw report — into a compact, accurate brief with a scannable 'At a glance' summary plus the standard bug structure, so a time-constrained QA/PO can judge relevance and priority in seconds. | 1.0 | — |
+| `qa-bug-brief` | skill | Rewrite a verbose bug ticket — or draft a new one from a raw report — into a compact, accurate brief with a scannable 'At a glance' summary plus the standard bug structure, so a time-constrained QA/PO can judge relevance and priority in seconds. | 1.1 | — |
 | `qa-define-testcases` | skill | Help a QA engineer identify, draft, and challenge test cases for a Jahia story or bug ticket. Use during refinement or the test phase of a ticket. | 1.0 | qa-test-case-design |
 | `qa-test-case-design` | skill | Multi-step workflow for designing a coherent set of test cases for a Jahia feature: risk storming → case generation → trace matrix → review checklist. Use when a QA engineer needs more than a one-shot list, or when qa-define-testcases needs to be expanded into a deeper artefact set. | 1.0 | qa-define-testcases |
 | `qa-tldr` | skill | Digest a verbose GitHub issue/PR, Jira ticket, or AI-generated description into a fast, practical summary before deciding what QA work it actually needs. | 1.0 | — |
