@@ -3,7 +3,7 @@ name: qa-bug-brief
 description: "Rewrite a verbose bug ticket — or draft a new one from a raw report — into a compact, accurate brief with a scannable 'At a glance' summary plus the standard bug structure, so a time-constrained QA/PO can judge relevance and priority in seconds."
 kind: skill
 pillar: test-case-identification
-version: "1.0"
+version: "1.1"
 ---
 
 # Bug ticket brief
@@ -100,7 +100,15 @@ belongs in the detailed section below, not here.
   values that appear in the source (versions, file sizes, entry counts,
   error codes, thresholds) — don't launder "4.94GB, 7,899 ZIP entries"
   into "a large file." Precision here is what makes a report
-  reproducible; do not add steps the source doesn't imply. See
+  reproducible; do not add steps the source doesn't imply. Lead the
+  section with a short `Precondition:` list holding the state that must
+  already exist before anything is done (a content type, a config, a
+  deployed module, a user role). The numbered steps then contain only
+  actions someone performs. Setup dressed up as step 1 makes the list
+  look longer and harder to execute than it is. When the failure is one
+  step inside a longer sequence, anchor the expectation to it by number
+  ("on step 5, save should still fail") rather than restating the
+  desired behaviour in the abstract — it pins which step is wrong. See
   "Real-world usage vs. engineered reproducer", "Reproduction steps vs.
   diagnostic/verification steps", and "Test/reproducer modules
   referenced in steps to reproduce" below.
@@ -170,6 +178,22 @@ necessary — not the other way around. Before finalizing this section:
    makes re-testing far easier; don't drop it in favor of a paraphrased
    description that looks simpler but is actually harder to execute
    precisely.
+5. **Generalize an incidental fixture; keep a load-bearing one
+   verbatim.** Before copying a source's type names, property names, CND
+   or module definition into the steps, ask what role they play. If *any*
+   content matching the same shape reproduces the bug, the source's names
+   are incidental — describe the shape instead ("a content type with a
+   mandatory dropdown field accepting multiple values"), and move the
+   concrete definition to "More AI description" for whoever writes the
+   fix. A tester can then reproduce it on content they already have,
+   rather than first rebuilding the reporter's fixture. If instead the
+   exact values are what triggers the bug (a 4.94GB file, a specific
+   error code, a curl with particular query params), point 4 stands and
+   they are copied verbatim. When you can't tell which it is, ask. This
+   is the gate in front of "Commands, code, and config are copied
+   verbatim" and "Test/reproducer modules referenced in steps to
+   reproduce" below: both say how to carry a fixture the steps need, and
+   neither is a reason to keep one they don't.
 
 ### Reproduction steps vs. diagnostic/verification steps
 
@@ -191,8 +215,11 @@ since it's still useful supporting evidence for engineers reviewing the
 brief.
 
 **Commands, code, and config are copied verbatim — never paraphrased,
-truncated, or merged**, whenever they're part of the steps (whether as
-the primary path or alongside a real-usage framing from point 2 above).
+truncated, or merged**, whenever they're genuinely part of the steps
+(whether as the primary path or alongside a real-usage framing from
+point 2 above). This governs how to reproduce something a step needs,
+not whether the step needs it — point 5 above settles that first, and a
+definition it rules incidental is moved out rather than copied in.
 Any curl call, shell command, code snippet, or config block the source
 gives must be reproduced in full, in its own fenced code block with the
 source's language if given (`bash`, `properties`, `cnd`, `jsp`, …), exactly
@@ -216,6 +243,14 @@ as written:
 A step like "deploy this module" or "deploy the reproducer module" is
 unusable to whoever reads the brief unless they actually have that
 module. Handle it explicitly, in this order:
+
+First settle whether the module is needed at all, per point 5 of
+"Real-world usage vs. engineered reproducer" above. If it is an
+incidental fixture — any content of the same shape reproduces the bug —
+it does not belong in the steps in any form, and the rules below do not
+apply: describe the shape and move the definition to "More AI
+description". The rules below govern a module the bug genuinely cannot
+be reproduced without.
 
 1. **If the source itself includes enough to reconstruct the module**
    (CND, view/properties files, JSP or code snippets) — keep that
